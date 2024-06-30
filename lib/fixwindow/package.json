@@ -1,0 +1,6 @@
+{
+  "main": "./fixwindow.cjs.js",
+  "module": "./fixwindow.esm.js",
+  "unpkg": "./fixwindow.min.js",
+  "types": "./FixWindow.d.ts"
+}

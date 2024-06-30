@@ -14,7 +14,19 @@ export default {
     "type-enum": [
       2,
       "always",
-      ["build", "ci", "docs", "feat", "fix", "perf", "refactor", "chore", "revert", "style", "test"]
+      [
+        "build", // сборка
+        "ci", // непрерывная интеграция (Continuous Integration)
+        "docs", // документация
+        "feat", // новая функциональность (feature)
+        "fix", // исправление ошибок
+        "perf", // улучшение производительности (performance)
+        "refactor", // рефакторинг кода
+        "chore", // внутренние изменения, не связанные с функциональностью или исправлением ошибок
+        "revert", // отмена предыдущего коммита
+        "style", // изменения в стиле кода
+        "test" // добавление или исправление тестов
+      ]
     ]
   },
   extends: ["@commitlint/config-conventional"]

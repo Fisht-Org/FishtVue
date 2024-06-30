@@ -49,20 +49,24 @@ const BABEL_PLUGIN_OPTIONS = {
 const EXTERNAL = ["vue", "@heroicons/vue/20/solid", "tailwind-merge", "clsx"]
 // =====================================================================================================================
 const GLOBAL_DEPENDENCIES = {
+  "tailwind-merge": "tailwindMerge",
+  clsx: "clsx",
   vue: "Vue"
 }
 const CORE_DEPENDENCIES = JSON.parse(`{
   "@heroicons/vue/20/solid": "Icon",
-  "tailwind-merge": "tailwind-merge",
+  "tailwind-merge": "tailwindMerge",
   "clsx": "clsx",
+  "${PROJECT_NAME}/config": "${PROJECT_NAME}.config",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
   "${PROJECT_NAME}/button": "${PROJECT_NAME}.button",
   "${PROJECT_NAME}/alert": "${PROJECT_NAME}.alert",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
   "${PROJECT_NAME}/utils/objectHandler": "${PROJECT_NAME}.utils.objectHandler",
+  "${PROJECT_NAME}/utils/tailwindHandler": "${PROJECT_NAME}.utils.tailwindHandler",
   "${PROJECT_NAME}/utils": "${PROJECT_NAME}.utils"
 }`)
-const EXPORT_DEPENDENCIES = ["FishtVue.ts", "Alert.vue", "objectHandler.ts", "index.ts"]
+const EXPORT_DEPENDENCIES = ["config", "config.ts", "Alert.vue"]
 const GLOBAL_COMPONENT_DEPENDENCIES = {
   ...GLOBAL_DEPENDENCIES,
   ...CORE_DEPENDENCIES
@@ -94,7 +98,22 @@ function addEntry(folder, inFile, outFile) {
       external
     }
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const get_ES = (isMinify) => {
+    return {
+      ...getEntry(isMinify),
+      output: [
+        {
+          format: "es",
+          file: `${output}${isMinify ? ".min" : ""}.mjs`,
+          sourcemap: true,
+          exports: "auto"
+        }
+      ]
+    }
+  }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const get_CJS_ESM = (isMinify) => {
     return {
       ...getEntry(isMinify),
@@ -113,6 +132,7 @@ function addEntry(folder, inFile, outFile) {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const get_IIFE = (isMinify) => {
     return {
       ...getEntry(isMinify),
@@ -128,10 +148,12 @@ function addEntry(folder, inFile, outFile) {
     }
   }
 
+  entries.push(get_ES())
   entries.push(get_CJS_ESM())
   entries.push(get_IIFE())
 
   // Minify
+  entries.push(get_ES(true))
   entries.push(get_CJS_ESM(true))
   entries.push(get_IIFE(true))
 }
@@ -176,9 +198,10 @@ function addSFC(coreDir) {
 function addUtils() {
   addEntry("utils", "Utils.ts", "utils")
   addEntry("utils", "objectHandler.ts", "objectHandler")
+  addEntry("utils", "tailwindHandler.ts", "tailwindHandler")
 }
 function addConfig() {
-  addEntry("config", "FishtVue.ts", "config")
+  addEntry("config", "config.ts", "config")
 }
 function copyDependencies(inFolder, outFolder, subFolder) {
   fs.readdirSync(fileURLToPath(new URL(inFolder, import.meta.url)), { withFileTypes: true })
