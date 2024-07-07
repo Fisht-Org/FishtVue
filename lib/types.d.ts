@@ -9,6 +9,7 @@ import {
   type Ref,
   type UnwrapRef
 } from "vue"
+
 /**
  * ### Defining dependent types for `ClassComponent`
  */
@@ -29,17 +30,17 @@ declare type EmitFn<Options = ObjectEmitsOptions, Event extends keyof Options = 
               : (event: key, ...args: any[]) => void
           }[Event]
         >
+
 export declare class ClassComponent<Props, Slots, Emits, Expose> {
   $props: Props & PublicProps
   $slots: Slots
   $emit: EmitFn<Emits>
   $expose: Expose
 }
-/**
- * ### Define useful alias types
- */
+
+export declare type DeepPartial<T> = { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] }
 export declare type ReadRef<T = any> = Readonly<Ref<UnwrapRef<T>>>
-export declare type Locale = { [key: string]: string | string[] | Locale }
+export declare type ThemeColor = { [key in 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950]: string }
 export declare type StyleClass = string | Array<string>
 export declare type TWidth = number | string | "500px" | "50rem" | "50em" | "50vw"
 export declare type THeight = number | string | "500px" | "50rem" | "50em" | "50vh"

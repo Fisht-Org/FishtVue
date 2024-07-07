@@ -18,7 +18,7 @@
   const timer = ref<number | null>(null)
   const countTimer = ref<number>(0)
   const positionMouse = ref<{ x: number; y: number }>()
-  const options = useFishtVue().config.componentsOptions?.fixWindow
+  const options = useFishtVue("fixWindow")
   // ---PROPS-------------------------------
   const position = computed<NonNullable<FixWindowProps["position"]>>(
     () => props?.position ?? options?.position ?? "top"
@@ -64,7 +64,7 @@
   })
   const mode = computed<string>(() => {
     const baseStyle =
-      "flex items-center px-1 border border-neutral-200 dark:border-neutral-900 text-black text-zinc-600 dark:text-zinc-400"
+      "px-1 border border-neutral-200 dark:border-neutral-900 text-black text-zinc-600 dark:text-zinc-400"
     switch (props.mode ?? options?.mode) {
       case "filled":
         return `${baseStyle} bg-stone-100 dark:bg-stone-900 rounded-md`
@@ -153,6 +153,7 @@
     },
     { immediate: true }
   )
+
   // ---SET-LISTENER--------------------------
   function addOpenListener() {
     switch (eventOpen.value) {
@@ -176,6 +177,7 @@
         break
     }
   }
+
   function removeOpenListener() {
     switch (eventOpen.value) {
       case "hover":
@@ -198,6 +200,7 @@
         break
     }
   }
+
   function addCloseListener() {
     switch (eventClose.value) {
       case "hover": {
@@ -222,6 +225,7 @@
         break
     }
   }
+
   function removeCloseListener() {
     switch (eventClose.value) {
       case "hover":
@@ -244,6 +248,7 @@
         break
     }
   }
+
   function addPositionListener() {
     if (scrollableEl.value) {
       ;(scrollableEl.value as HTMLElement).addEventListener("scroll", updatePosition)
@@ -254,6 +259,7 @@
     }
     window.addEventListener("resize", updatePosition)
   }
+
   function removePositionListener() {
     if (scrollableEl.value) {
       ;(scrollableEl.value as HTMLElement).removeEventListener("scroll", updatePosition)
@@ -264,17 +270,20 @@
     }
     window.removeEventListener("resize", updatePosition)
   }
+
   // ---OPEN-CLOSE--------------------------
   function open(env?: MouseEvent) {
     if (byCursor.value) {
       positionMouse.value = { x: env?.x as number, y: env?.y as number }
     }
+
     function setIsOpen() {
       isOpen.value = true
       if (env) {
         emit("open", env)
       }
     }
+
     if (delay.value === 0) {
       return setIsOpen()
     }
@@ -291,6 +300,7 @@
       }, 100) as unknown as number
     }
   }
+
   function close(event?: MouseEvent) {
     if (typeof timer.value === "number") {
       clearInterval(timer.value)
@@ -300,16 +310,19 @@
     isOpen.value = false
     if (event) emit("close", event)
   }
+
   // ---METHODS-----------------------------
   function openOnContextMenu(event: MouseEvent) {
     event.preventDefault()
     open(event)
   }
+
   function closeOnClick(event: MouseEvent) {
     if (!event.composedPath().includes(element.value as HTMLElement)) {
       close(event)
     }
   }
+
   function defaultCloseEvent(event: FixWindowEvent): FixWindowEvent {
     switch (event) {
       case "hover":
@@ -328,6 +341,7 @@
         return "click"
     }
   }
+
   // ---UPDATE-POSITION---------------------
   function updatePosition() {
     if (isOpen.value) {
@@ -437,7 +451,6 @@
     }
   }
 </script>
-
 <template>
   <transition
     leave-active-class="transition-opacity ease-in-out duration-300"
@@ -451,7 +464,9 @@
       ref="fixWindow"
       :class="cn('fix-window', options?.classBody, props.classBody)"
       :style="`transform: translate(${x}px, ${y}px);${border}`">
-      <div :class="cn(mode, options?.class, props?.class)"><slot /></div>
+      <div :class="cn('fix-window-body', mode, options?.class, props?.class)">
+        <slot />
+      </div>
       <Button v-if="isCloseButton" mode="ghost" class="absolute top-2 right-2 px-[5px] m-0.5 h-9 w-9" @click="close">
         <XMarkIcon aria-hidden="true" class="h-5 w-5 fill-neutral-500 dark:fill-neutral-500" />
       </Button>
@@ -463,12 +478,24 @@
     position: fixed;
     left: 0;
     top: 0;
+    color: var(--fix-window-color, rgb(38 38 38 / 1));
+
+    .fix-window-body {
+      display: flex;
+      align-items: center;
+      border-radius: var(--fix-window-rounded, 0.25rem);
+      padding: var(--fix-window-padding, 0 1rem 0 1rem);
+      border-width: var(--fix-window-border-width, 1px);
+      border-color: var(--fix-window-border-color, rgb(229 229 229 / 1));
+    }
   }
+
   @media (prefers-color-scheme: light) {
     .fix-window {
       color: var(--neutral-800, rgb(38 38 38 / 1));
     }
   }
+
   @media (prefers-color-scheme: dark) {
     .fix-window {
       color: var(--neutral-300, rgb(212 212 212 / 1));

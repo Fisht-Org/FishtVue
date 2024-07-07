@@ -64,6 +64,8 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
   "${PROJECT_NAME}/utils/objectHandler": "${PROJECT_NAME}.utils.objectHandler",
   "${PROJECT_NAME}/utils/tailwindHandler": "${PROJECT_NAME}.utils.tailwindHandler",
+  "${PROJECT_NAME}/locale/locale": "${PROJECT_NAME}.locale.locale",
+  "${PROJECT_NAME}/theme/theme": "${PROJECT_NAME}.theme.theme",
   "${PROJECT_NAME}/utils": "${PROJECT_NAME}.utils"
 }`)
 const EXPORT_DEPENDENCIES = ["config", "config.ts", "Alert.vue"]
@@ -149,13 +151,13 @@ function addEntry(folder, inFile, outFile) {
   }
 
   entries.push(get_ES())
-  entries.push(get_CJS_ESM())
-  entries.push(get_IIFE())
+  // entries.push(get_CJS_ESM())
+  // entries.push(get_IIFE())
 
   // Minify
-  entries.push(get_ES(true))
-  entries.push(get_CJS_ESM(true))
-  entries.push(get_IIFE(true))
+  // entries.push(get_ES(true))
+  // entries.push(get_CJS_ESM(true))
+  // entries.push(get_IIFE(true))
 }
 // =====================================================================================================================
 function corePlugin() {
@@ -199,6 +201,8 @@ function addUtils() {
   addEntry("utils", "Utils.ts", "utils")
   addEntry("utils", "objectHandler.ts", "objectHandler")
   addEntry("utils", "tailwindHandler.ts", "tailwindHandler")
+  addEntry("theme", "theme.ts", "theme")
+  addEntry("locale", "locale.ts", "locale")
 }
 function addConfig() {
   addEntry("config", "config.ts", "config")

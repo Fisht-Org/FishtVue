@@ -1,5 +1,15 @@
 import { VNode } from "vue"
-import { ClassComponent, GlobalComponentConstructor, StyleMode, Position, ReadRef, RefLink, StyleClass } from "../types"
+import {
+  ClassComponent,
+  GlobalComponentConstructor,
+  StyleMode,
+  Position,
+  ReadRef,
+  RefLink,
+  StyleClass,
+  DeepPartial
+} from "../types"
+import { ColorScheme } from "fishtvue/theme/TypesTheme"
 // ---------------------------------------
 export type FixWindowEvent = "hover" | "click" | "mousedown" | "mouseup" | "dblclick" | "contextmenu" | "none"
 export declare type FixWindowProps = {
@@ -60,6 +70,25 @@ export declare type FixWindowOption = Pick<
   | "byCursor"
   | "closeButton"
 >
+export type FixWindowStyle = DeepPartial<
+  ColorScheme<
+    {
+      root: {
+        color: "{neutral.800}" | string
+      }
+    },
+    {
+      root: {
+        color: "{neutral.300}" | string
+      }
+    }
+  > & {
+    body: {
+      border: "{rounded.xs}" | string
+    }
+  }
+>
+
 // ---------------------------------------
 declare class FixWindow extends ClassComponent<FixWindowProps, FixWindowSlots, FixWindowEmits, FixWindowExpose> {}
 
