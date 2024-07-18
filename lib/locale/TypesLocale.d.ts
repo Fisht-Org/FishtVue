@@ -1,4 +1,4 @@
-import { DeepPartial } from "fishtvue/types"
+import { DeepPartial } from "../types"
 
 export declare type Locale = DeepPartial<Record<string | "en", DefaultLocale>>
 export declare type TypeLocale = { [key: string]: string | string[] | TypeLocale }

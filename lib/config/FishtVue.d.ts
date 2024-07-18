@@ -1,8 +1,8 @@
 import { Plugin } from "vue"
-import { DeepPartial, StyleMode } from "../types"
+import { StyleMode } from "../types"
 
 import { Locale } from "fishtvue/locale"
-import { Theme } from "fishtvue/theme/TypesTheme"
+import { Theme, ThemeComponents } from "fishtvue/theme/TypesTheme"
 
 import { FixWindowOption } from "fishtvue/fixwindow"
 
@@ -10,9 +10,15 @@ export declare type FishtVue = {
   config: FishtVueConfiguration
 }
 
-export declare function useFishtVue<T extends keyof ComponentsOptions>(
+export declare function useFishtVue<T extends FishtVue>(): Readonly<T> | undefined
+
+export declare function getOptions<T extends keyof ComponentsOptions>(
   component?: T
-): keyof ComponentsOptions extends T ? FishtVue : ComponentsOptions[T]
+): keyof ComponentsOptions extends T ? Readonly<ComponentsOptions> : Readonly<ComponentsOptions[T]>
+
+export declare function getStyle<T extends keyof ThemeComponents>(
+  component?: T
+): keyof ThemeComponents extends T ? Readonly<Theme> | undefined : Readonly<ThemeComponents[T]> | undefined
 
 declare const plugin: Plugin
 export default plugin
@@ -33,9 +39,10 @@ export declare interface FishtVueConfiguration {
   inputStyle?: StyleMode
   zIndex?: Partial<ZIndexOptions>
   locale?: Locale
-  theme?: DeepPartial<Theme>
-  componentsOptions?: ComponentsOptions
+  theme?: Theme
+  componentsOptions?: Partial<ComponentsOptions>
 }
+
 type ZIndexOptions = {
   modal: number
   overlay: number

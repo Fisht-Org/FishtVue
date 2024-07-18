@@ -39,8 +39,17 @@ export declare class ClassComponent<Props, Slots, Emits, Expose> {
 }
 
 export declare type DeepPartial<T> = { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] }
+export declare type DeepOmit<T, K> = T extends object
+  ? { [Key in keyof T]: Key extends K ? never : T[Key] extends object ? DeepOmit<T[Key], K> : T[Key] }
+  : T
+type DeepPick<T, K extends string> = K extends `${infer First}.${infer Rest}`
+  ? First extends keyof T
+    ? { [P in First]: DeepPick<T[First], Rest> }
+    : never
+  : K extends keyof T
+    ? { [P in K]: T[K] }
+    : never
 export declare type ReadRef<T = any> = Readonly<Ref<UnwrapRef<T>>>
-export declare type ThemeColor = { [key in 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950]: string }
 export declare type StyleClass = string | Array<string>
 export declare type TWidth = number | string | "500px" | "50rem" | "50em" | "50vw"
 export declare type THeight = number | string | "500px" | "50rem" | "50em" | "50vh"
@@ -61,20 +70,12 @@ export declare type PositionShort =
   | "bottom-right"
   | "top-right"
 export declare type Position =
-  | "center"
+  | PositionShort
   | "center-top"
   | "center-bottom"
   | "center-right"
   | "center-left"
-  | "top"
-  | "top-right"
-  | "top-left"
-  | "bottom"
-  | "bottom-right"
-  | "bottom-left"
-  | "right"
   | "right-top"
   | "right-bottom"
-  | "left"
   | "left-top"
   | "left-bottom"

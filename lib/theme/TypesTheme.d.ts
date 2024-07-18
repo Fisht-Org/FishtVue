@@ -1,70 +1,71 @@
-import { DeepPartial, Size, ThemeColor } from "../types"
+import { DeepPartial, Size } from "../types"
 import { FixWindowStyle } from "fishtvue/fixwindow"
 
 // ----------------------
-declare type Theme = {
+declare type Theme = DeepPartial<{
   primitive: ThemePrimitive
   semantic: ThemeSemantic
   components: ThemeComponents
-}
+}>
+
 // ----------------------
-type ThemePrimitive = Margin | Padding | Colors | Border | Rounded
+declare function linksTheme<T extends Theme>(theme: Theme | undefined): T | undefined
+
+// ----------------------
+type ThemePrimitive = Margin & Padding & Colors & Border & Rounded & Shadow & Opacity & Duration
 type ThemeSemantic = {
   primary: ThemeColor
   customThemeColor: number
   customThemeColorContrast: number
 }
-type ThemeComponents = {
+declare type ThemeComponents = {
   fixWindow: FixWindowStyle
+  test: string
 }
 // ----------------------
-type ColorScheme<Light extends object, Dark extends object> = DeepPartial<{
-  root?: Record<string, string>
-  light?: Light
-  dark?: Dark
-}>
+type ColorParameters = {
+  border: string
+  outline: string
+  shadow: string
+  color: string
+  background: string
+  opacity: string
+}
+type OtherParameters = {
+  padding: string
+  margin: string
+  borderWidth: string
+  outlineWidth: string
+  rounded: string
+  duration: string
+}
+type ColorParametersScheme<T extends string> = { [key in T]: Partial<ColorParameters> }
+type OtherParametersScheme<T extends string> = { [key in T]: Partial<OtherParameters> }
+declare type ColorScheme<T extends string> = OtherParametersScheme<T> & {
+  light: ColorParametersScheme<T>
+  dark: ColorParametersScheme<T>
+}
 // ----------------------
-type Margin = Record<"m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr", Record<keyof Length, string>>
-type Padding = Record<"p" | "px" | "py" | "pt" | "pb" | "pl" | "pr", Record<keyof Length, string>>
+type Margin = Record<"m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr", Record<keysLength, string>>
+type Padding = Record<"p" | "px" | "py" | "pt" | "pb" | "pl" | "pr", Record<keysLength, string>>
+type Colors = Record<namesColors, ThemeColor>
 type Border = Record<"borderWidth", BorderWidth>
 type Rounded = Record<"rounded", ThemeRounded>
-type Colors = Record<
-  | string
-  | "emerald"
-  | "green"
-  | "lime"
-  | "red"
-  | "orange"
-  | "amber"
-  | "yellow"
-  | "teal"
-  | "cyan"
-  | "sky"
-  | "blue"
-  | "indigo"
-  | "violet"
-  | "purple"
-  | "fuchsia"
-  | "pink"
-  | "rose"
-  | "slate"
-  | "gray"
-  | "zinc"
-  | "neutral"
-  | "stone",
-  ThemeColor
->
+type Shadow = Record<"shadow", ThemeShadow>
+type Opacity = Record<"opacity", ThemeOpacity>
+type Duration = Record<"duration", ThemeDuration>
 
-interface ThemeRounded extends Record<Size, string> {
-  none: string
-  full: string
-}
+interface ThemeRounded extends Record<Size | "none" | "full", string> {}
 
-interface BorderWidth extends Record<2 | 4 | 6 | 8, string> {
-  none: "0px"
-}
+interface ThemeShadow extends Record<Size | "inner" | "none", string> {}
 
-type Length = {
+interface ThemeOpacity extends Record<keysOpacity, number> {}
+
+interface ThemeDuration extends Record<keysDuration, string> {}
+
+interface BorderWidth extends Record<keysBorder | "none", string> {}
+
+interface Length extends Record<keysLength, string> {
   0: "0px"
   0.25: "1px"
   0.5: "2px"
@@ -92,3 +93,34 @@ type Length = {
   36: "144px"
   40: "160px"
 }
+
+type ThemeColor = { [key in keysColor]: string }
+type namesColors =
+  | "emerald"
+  | "green"
+  | "lime"
+  | "red"
+  | "orange"
+  | "amber"
+  | "yellow"
+  | "teal"
+  | "cyan"
+  | "sky"
+  | "blue"
+  | "indigo"
+  | "violet"
+  | "purple"
+  | "fuchsia"
+  | "pink"
+  | "rose"
+  | "slate"
+  | "gray"
+  | "zinc"
+  | "neutral"
+  | "stone"
+type keysColor = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
+type keysOpacity = 0 | 5 | 10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60 | 65 | 70 | 75 | 80 | 85 | 90 | 95 | 100
+type keysDuration = 0 | 75 | 100 | 150 | 200 | 300 | 500 | 700 | 1000
+type keysBorder = 1 | 2 | 4 | 6 | 8
+// prettier-ignore
+type keysLength = 0 | 0.25 | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 | 16 | 20 | 24 | 28 | 32 | 36 | 40

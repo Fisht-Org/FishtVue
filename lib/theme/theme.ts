@@ -1,5 +1,48 @@
 import type { FishtVueConfiguration } from "fishtvue/config"
-import { fixWindowStyle } from "fishtvue/fixwindow/style"
+import type { Theme } from "./TypesTheme"
+
+import fixWindowStyle from "fishtvue/fixwindow/themes"
+import { deepCopy } from "fishtvue/utils/objectHandler"
+
+const fieldNameTheme: Array<keyof Theme> = ["primitive", "semantic", "components"]
+const mask = new RegExp("{([^}]*)}", "g")
+const replacer = (match: string, route: string, theme: Theme): string => {
+  const keys = route.split(".")
+
+  function getToValue(obj: any): string | undefined {
+    let value = obj
+    for (const key of keys) {
+      value = value[key]
+      if (value === undefined) return undefined
+    }
+    return value
+  }
+
+  for (const key of fieldNameTheme) {
+    const value = getToValue(theme[key])
+    if (value !== undefined) return value
+  }
+  return match
+}
+
+function setLinksTheme<P>(obj: any, theme: Theme): P {
+  for (const key in obj) {
+    if (obj[key] instanceof Array || obj[key] instanceof Object) obj[key] = setLinksTheme(obj[key], theme)
+    if (typeof obj[key] === "string" && mask.test(obj[key]))
+      obj[key] = (obj[key] as string).replace(mask, (match: string, route: string) => replacer(match, route, theme))
+  }
+  return obj
+}
+
+export function linksTheme<T extends Theme>(theme: Theme | undefined): T | undefined {
+  // TODO проработать вариант когда ссылка ссылается на другую ссылку
+  if (!theme) return
+  const copyTheme = deepCopy(theme) as T
+  copyTheme.primitive = setLinksTheme<Theme["primitive"]>(copyTheme.primitive, copyTheme)
+  copyTheme.semantic = setLinksTheme<Theme["semantic"]>(copyTheme.semantic, copyTheme)
+  copyTheme.components = setLinksTheme<Theme["components"]>(copyTheme.components, copyTheme)
+  return copyTheme
+}
 
 export const defaultTheme: FishtVueConfiguration["theme"] = {
   primitive: {
@@ -397,6 +440,7 @@ export const defaultTheme: FishtVueConfiguration["theme"] = {
     },
     borderWidth: {
       none: "0px",
+      1: "1px",
       2: "2px",
       4: "4px",
       6: "6px",
@@ -410,6 +454,49 @@ export const defaultTheme: FishtVueConfiguration["theme"] = {
       lg: "8px",
       xl: "12px",
       full: "9999px"
+    },
+    shadow: {
+      xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      sm: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+      md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+      lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+      inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+      none: "0 0 #0000"
+    },
+    opacity: {
+      0: 0,
+      5: 0.05,
+      10: 0.1,
+      15: 0.15,
+      20: 0.2,
+      25: 0.25,
+      30: 0.3,
+      35: 0.35,
+      40: 0.4,
+      45: 0.45,
+      50: 0.5,
+      55: 0.55,
+      60: 0.6,
+      65: 0.65,
+      70: 0.7,
+      75: 0.75,
+      80: 0.8,
+      85: 0.85,
+      90: 0.9,
+      95: 0.95,
+      100: 1
+    },
+    duration: {
+      0: "0s",
+      75: "75ms",
+      100: "100ms",
+      150: "150ms",
+      200: "200ms",
+      300: "300ms",
+      500: "500ms",
+      700: "700ms",
+      1000: "1000ms"
     },
     emerald: {
       50: "#ecfdf5",
@@ -699,20 +786,20 @@ export const defaultTheme: FishtVueConfiguration["theme"] = {
     }
   },
   semantic: {
-    customThemeColor: 100,
-    customThemeColorContrast: 30,
+    customThemeColor: 200,
+    customThemeColorContrast: 100,
     primary: {
-      50: "{customThemeColor} {customThemeColorContrast}% 95.1%",
-      100: "{customThemeColor} {customThemeColorContrast}% 93.1%",
-      200: "{customThemeColor} {customThemeColorContrast}% 86.1%",
-      300: "{customThemeColor} {customThemeColorContrast}% 74.4%",
-      400: "{customThemeColor} {customThemeColorContrast}% 60.1%",
-      500: "{customThemeColor} {customThemeColorContrast}% 46.9%",
-      600: "{customThemeColor} {customThemeColorContrast}% 39.5%",
-      700: "{customThemeColor} {customThemeColorContrast}% 30.5%",
-      800: "{customThemeColor} {customThemeColorContrast}% 20.5%",
-      900: "{customThemeColor} {customThemeColorContrast}% 9.2%",
-      950: "{customThemeColor} {customThemeColorContrast}% 6%"
+      50: "hsl({customThemeColor} {customThemeColorContrast}% 95.1%)",
+      100: "hsl({customThemeColor} {customThemeColorContrast}% 93.1%)",
+      200: "hsl({customThemeColor} {customThemeColorContrast}% 86.1%)",
+      300: "hsl({customThemeColor} {customThemeColorContrast}% 74.4%)",
+      400: "hsl({customThemeColor} {customThemeColorContrast}% 60.1%)",
+      500: "hsl({customThemeColor} {customThemeColorContrast}% 46.9%)",
+      600: "hsl({customThemeColor} {customThemeColorContrast}% 39.5%)",
+      700: "hsl({customThemeColor} {customThemeColorContrast}% 30.5%)",
+      800: "hsl({customThemeColor} {customThemeColorContrast}% 20.5%)",
+      900: "hsl({customThemeColor} {customThemeColorContrast}% 9.2%)",
+      950: "hsl({customThemeColor} {customThemeColorContrast}% 6%)"
     }
   },
   components: {

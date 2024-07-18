@@ -7,7 +7,7 @@ import {
   ReadRef,
   RefLink,
   StyleClass,
-  DeepPartial
+  DeepPick
 } from "../types"
 import { ColorScheme } from "fishtvue/theme/TypesTheme"
 // ---------------------------------------
@@ -19,6 +19,7 @@ export declare type FixWindowProps = {
   position?: Position
   class?: StyleClass
   classBody?: StyleClass
+  styles?: FixWindowStyle
   mode?: StyleMode
   eventOpen?: FixWindowEvent
   eventClose?: FixWindowEvent
@@ -39,8 +40,8 @@ export declare type FixWindowEmits = {
 }
 export declare type FixWindowExpose = {
   // ---STATE-------------------------
-  x: ReadRef<number>
-  y: ReadRef<number>
+  x: ReadRef<string>
+  y: ReadRef<string>
   isOpen: ReadRef<boolean>
   // ---PROPS-------------------------
   position: ReadRef<FixWindowProps["position"]>
@@ -70,23 +71,22 @@ export declare type FixWindowOption = Pick<
   | "byCursor"
   | "closeButton"
 >
-export type FixWindowStyle = DeepPartial<
-  ColorScheme<
-    {
-      root: {
-        color: "{neutral.800}" | string
-      }
-    },
-    {
-      root: {
-        color: "{neutral.300}" | string
-      }
-    }
-  > & {
-    body: {
-      border: "{rounded.xs}" | string
-    }
-  }
+type ClassesScheme = "body" | "root"
+// export declare type FixWindowStyle = DeepPartial<ColorScheme<ClassesScheme>>
+export declare type FixWindowStyle = DeepPick<
+  ColorScheme<ClassesScheme>,
+  | "root.duration"
+  | "body.padding"
+  | "body.rounded"
+  | "body.borderWidth"
+  | "light.root.color"
+  | "light.body.background"
+  | "light.body.color"
+  | "light.body.border"
+  | "dark.root.color"
+  | "dark.body.background"
+  | "dark.body.color"
+  | "dark.body.border"
 >
 
 // ---------------------------------------

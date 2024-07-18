@@ -3,8 +3,10 @@
   // import Button from "fishtvue/button"
   import { XMarkIcon } from "@heroicons/vue/20/solid"
   import type { FixWindowProps, FixWindowEmits, FixWindowExpose, FixWindowEvent } from "./FixWindow"
-  import { useFishtVue } from "fishtvue/config"
+  import { getOptions, getStyle } from "fishtvue/config"
   import { cn } from "fishtvue/utils/tailwindHandler"
+  import { deepMerge } from "fishtvue/utils/objectHandler"
+  import defaultTheme from "./themes/default"
   // ---PROPS-EMITS-SLOTS-------------------
   const props = defineProps<FixWindowProps>()
   const emit = defineEmits<FixWindowEmits>()
@@ -12,14 +14,16 @@
   const fixWindow = ref<Element>()
   const scrollableEl = ref<Element>()
   // ---STATE-------------------------------
-  const x = ref<number>(0)
-  const y = ref<number>(0)
+  const x = ref<string>("0px")
+  const y = ref<string>("0px")
   const isOpen = ref<boolean>(false)
   const timer = ref<number | null>(null)
   const countTimer = ref<number>(0)
   const positionMouse = ref<{ x: number; y: number }>()
-  const options = useFishtVue("fixWindow")
+  const options = getOptions("fixWindow")
+  const globalStyles = getStyle("fixWindow")
   // ---PROPS-------------------------------
+  const styles = computed(() => deepMerge(defaultTheme, globalStyles, props.styles))
   const position = computed<NonNullable<FixWindowProps["position"]>>(
     () => props?.position ?? options?.position ?? "top"
   )
@@ -98,6 +102,7 @@
   // ---MOUNT-UNMOUNT-----------------------
   onMounted(() => {
     if (element.value) {
+      updatePosition()
       addOpenListener()
       addCloseListener()
       addPositionListener()
@@ -383,16 +388,16 @@
           body.width = 0
           body.height = 0
         }
-        //
+
         el.xCenter = body.x + (body.width - child.width) / 2
         el.yCenter = body.y + (body.height - child.height) / 2
-        //
+
         el.xTranslate = body.width / 2 + child.width / 2
         el.yTranslate = body.height / 2 + child.height / 2
-        //
+
         el.xPositionIndex = position.value.match("^left") ? -1 : position.value.match("^right") ? 1 : 0
         el.yPositionIndex = position.value.match("^top") ? -1 : position.value.match("^bottom") ? 1 : 0
-        //
+
         el.xValue = position.value.match("-left$")
           ? body.x
           : position.value.match("-right$")
@@ -404,66 +409,62 @@
             ? body.y + body.height - child.height
             : 0
         //
-        x.value =
+        let xNum =
           Math.floor(
             el.xPositionIndex !== 0 || el.xValue === 0 ? el.xCenter + el.xTranslate * el.xPositionIndex : el.xValue
           ) +
           el.xPositionIndex * translatePx.value
-        y.value =
+        let yNum =
           Math.floor(
             el.yPositionIndex !== 0 || el.yValue === 0 ? el.yCenter + el.yTranslate * el.yPositionIndex : el.yValue
           ) +
           el.yPositionIndex * translatePx.value
         //
-        if (x.value < paddingWindow.value) {
-          x.value =
+        if (xNum < paddingWindow.value) {
+          xNum =
             body.width + body.x - paddingWindow.value > 0
               ? position.value.match("^left")
                 ? body.x + body.width
                 : paddingWindow.value
               : body.width + body.x
         }
-        if (y.value < paddingWindow.value) {
-          y.value =
+        if (yNum < paddingWindow.value) {
+          yNum =
             body.height + body.y - paddingWindow.value > 0
               ? position.value.match("^top")
                 ? body.y + body.height
                 : paddingWindow.value
               : body.height + body.y
         }
-        if (window.innerWidth - (x.value + child.width) < paddingWindow.value) {
-          x.value =
+        if (window.innerWidth - (xNum + child.width) < paddingWindow.value) {
+          xNum =
             body.x > window.innerWidth - paddingWindow.value
               ? body.x - child.width
               : position.value.match("^right")
                 ? body.x - child.width
                 : window.innerWidth - paddingWindow.value - child.width
         }
-        if (window.innerHeight - (y.value + child.height) < paddingWindow.value) {
-          y.value =
+        if (window.innerHeight - (yNum + child.height) < paddingWindow.value) {
+          yNum =
             body.y > window.innerHeight - paddingWindow.value
               ? body.y - child.height
               : position.value.match("^bottom")
                 ? body.y - child.height
                 : window.innerHeight - paddingWindow.value - child.height
         }
+        x.value = `${xNum}px`
+        y.value = `${yNum}px`
       }
     }
   }
 </script>
 <template>
-  <transition
-    leave-active-class="transition-opacity ease-in-out duration-300"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-    enter-active-class="transition-opacity ease-in-out duration-300"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100">
+  <transition>
     <div
       v-show="isOpen"
       ref="fixWindow"
       :class="cn('fix-window', options?.classBody, props.classBody)"
-      :style="`transform: translate(${x}px, ${y}px);${border}`">
+      :style="`transform: translate(${x}, ${y});${border}`">
       <div :class="cn('fix-window-body', mode, options?.class, props?.class)">
         <slot />
       </div>
@@ -473,32 +474,4 @@
     </div>
   </transition>
 </template>
-<style lang="scss" scoped>
-  .fix-window {
-    position: fixed;
-    left: 0;
-    top: 0;
-    color: var(--fix-window-color, rgb(38 38 38 / 1));
-
-    .fix-window-body {
-      display: flex;
-      align-items: center;
-      border-radius: var(--fix-window-rounded, 0.25rem);
-      padding: var(--fix-window-padding, 0 1rem 0 1rem);
-      border-width: var(--fix-window-border-width, 1px);
-      border-color: var(--fix-window-border-color, rgb(229 229 229 / 1));
-    }
-  }
-
-  @media (prefers-color-scheme: light) {
-    .fix-window {
-      color: var(--neutral-800, rgb(38 38 38 / 1));
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .fix-window {
-      color: var(--neutral-300, rgb(212 212 212 / 1));
-    }
-  }
-</style>
+<style lang="scss" scoped></style>

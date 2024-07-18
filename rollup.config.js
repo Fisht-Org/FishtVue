@@ -1,4 +1,4 @@
-// rollup.config.mjs
+// rollup.config.js
 // =====================================================================================================================
 import fs from "fs-extra"
 import path from "path"
@@ -62,7 +62,11 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/button": "${PROJECT_NAME}.button",
   "${PROJECT_NAME}/alert": "${PROJECT_NAME}.alert",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
+  "${PROJECT_NAME}/utils/dateHandler": "${PROJECT_NAME}.utils.dateHandler",
+  "${PROJECT_NAME}/utils/arrayHandler": "${PROJECT_NAME}.utils.arrayHandler",
+  "${PROJECT_NAME}/utils/stringHandler": "${PROJECT_NAME}.utils.stringHandler",
   "${PROJECT_NAME}/utils/objectHandler": "${PROJECT_NAME}.utils.objectHandler",
+  "${PROJECT_NAME}/utils/functionHandler": "${PROJECT_NAME}.utils.functionHandler",
   "${PROJECT_NAME}/utils/tailwindHandler": "${PROJECT_NAME}.utils.tailwindHandler",
   "${PROJECT_NAME}/locale/locale": "${PROJECT_NAME}.locale.locale",
   "${PROJECT_NAME}/theme/theme": "${PROJECT_NAME}.theme.theme",
@@ -205,7 +209,7 @@ function addUtils() {
   addEntry("locale", "locale.ts", "locale")
 }
 function addConfig() {
-  addEntry("config", "config.ts", "config")
+  addEntry("config", "index.ts", "config")
 }
 function copyDependencies(inFolder, outFolder, subFolder) {
   fs.readdirSync(fileURLToPath(new URL(inFolder, import.meta.url)), { withFileTypes: true })
