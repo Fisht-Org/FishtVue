@@ -1,53 +1,55 @@
-const styles: string = `
-  .fix-window {
+const styles = (scope = "", prefix = "", lightModeSelector = "", darkModeSelector = "", varsCss = "") => `
+  .${prefix}fix-window[${scope}]{${varsCss}}
+  .${prefix}fix-window[${scope}] {
     position: fixed;
     left: 0;
     top: 0;
 
-    .fix-window-body {
+    .${prefix}fix-window-body {
       display: flex;
       align-items: center;
-      padding: v-bind("styles?.body?.padding");
-      border-radius: v-bind("styles?.body?.rounded");
-      border-width: v-bind("styles?.body?.borderWidth");
+      padding: var(--${prefix}FixWindow-body-padding, 0 1rem 0 1rem);
+      border-radius: var(--${prefix}FixWindow-body-rounded, 0.25rem);
+      border-width: var(--${prefix}FixWindow-body-borderWidth, 1px);
       border-style: solid;
     }
   }
 
-  @media (prefers-color-scheme: light) {
-    .fix-window {
-      color: v-bind("styles?.light?.root?.color");
+  ${lightModeSelector} {
+    .${prefix}fix-window[${scope}] {
+      color: var(--${prefix}FixWindow-light-root-color, #262626);
 
-      .fix-window-body {
-        background-color: v-bind("styles?.light?.body?.background");
-        color: v-bind("styles?.light?.body?.color");
-        border-color: v-bind("styles?.light?.body?.border");
+      .${prefix}fix-window-body {
+        background-color: var(--${prefix}FixWindow-light-body-background, #f5f5f4);
+        color: var(--${prefix}FixWindow-light-body-color, #52525b);
+        border-color: var(--${prefix}FixWindow-light-body-border, #e5e5e5);
       }
     }
   }
 
-  @media (prefers-color-scheme: dark) {
-    .fix-window {
-      color: v-bind("styles?.dark?.root?.color");
+  ${darkModeSelector} {
+    .${prefix}fix-window[${scope}] {
+      color: var(--${prefix}FixWindow-dark-root-color, #d4d4d4);
 
-      .fix-window-body {
-        background-color: v-bind("styles?.dark?.body?.background");
-        color: v-bind("styles?.dark?.body?.color");
-        border-color: v-bind("styles?.dark?.body?.border");
+      .${prefix}fix-window-body {
+        background-color: var(--${prefix}FixWindow-dark-body-background, #1c1917);
+        color: var(--${prefix}FixWindow-dark-body-color, #a1a1aa);
+        border-color: var(--${prefix}FixWindow-dark-body-border, #171717);
       }
     }
   }
 
-  .v-enter-active,
-  .v-leave-active {
+  .v-enter-active[${scope}],
+  .v-leave-active[${scope}] {
     transition-property: opacity;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: v-bind("styles?.root?.duration");
+    transition-duration: var(--${prefix}FixWindow-root-duration, 250ms);
   }
 
-  .v-enter-from,
-  .v-leave-to {
+  .v-enter-from[${scope}],
+  .v-leave-to[${scope}] {
     opacity: 0;
   }
 `
+
 export default styles

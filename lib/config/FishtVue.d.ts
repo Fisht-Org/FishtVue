@@ -5,9 +5,17 @@ import { Locale } from "fishtvue/locale"
 import { Theme, ThemeComponents } from "fishtvue/theme/TypesTheme"
 
 import { FixWindowOption } from "fishtvue/fixwindow"
+import { NamesTheme } from "fishtvue/theme/theme"
 
 export declare type FishtVue = {
   config: FishtVueConfiguration
+  useFishtVue<T extends FishtVue>(): Readonly<T> | undefined
+  getOptions<T extends keyof ComponentsOptions>(
+    component?: T
+  ): keyof ComponentsOptions extends T ? Readonly<ComponentsOptions> : Readonly<ComponentsOptions[T]>
+  getStyle<T extends keyof ThemeComponents>(
+    component?: T
+  ): keyof ThemeComponents extends T ? Readonly<Theme> | undefined : Readonly<ThemeComponents[T]> | undefined
 }
 
 export declare function useFishtVue<T extends FishtVue>(): Readonly<T> | undefined
@@ -37,19 +45,53 @@ declare module "@vue/runtime-core" {
 
 export declare interface FishtVueConfiguration {
   inputStyle?: StyleMode
-  zIndex?: Partial<ZIndexOptions>
+  zIndex?: ZIndexOptions
   locale?: Locale
+  optionsTheme?: OptionsTheme
   theme?: Theme
-  componentsOptions?: Partial<ComponentsOptions>
+  componentsOptions?: ComponentsOptions
 }
 
-type ZIndexOptions = {
+type ZIndexOptions = Partial<{
   modal: number
   overlay: number
   menu: number
   tooltip: number
-}
-export type ComponentsOptions = {
-  fixWindow: FixWindowOption
+}>
+
+export type OptionsTheme = Partial<{
+  /**
+   * ## Available theme names `NamesTheme`
+   *
+   * Aurora => (заря)
+   *
+   * Larimar => (ларимар)
+   *
+   * Nimbus => (нимбус)
+   *
+   * Celestia => (селестия)
+   *
+   * Velvet => (бархат)
+   *
+   * Harmony => (гармония)
+   *
+   * Serenity => (безмятежность)
+   *
+   * Sapphire => (сапфир)
+   *
+   * Eclipse => (затмение)
+   *
+   * Iris => (ирис)
+   *
+   */
+  nameTheme: keyof typeof NamesTheme
+  /** ## PROPS-EMITS-SLOTS */
+  prefix: string
+  lightModeSelector: string
+  darkModeSelector: string
+}>
+
+export type ComponentsOptions = Partial<{
+  FixWindow: FixWindowOption
   test: string
-}
+}>

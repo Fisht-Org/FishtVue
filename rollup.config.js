@@ -58,10 +58,12 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "tailwind-merge": "tailwindMerge",
   "clsx": "clsx",
   "${PROJECT_NAME}/config": "${PROJECT_NAME}.config",
+  "${PROJECT_NAME}/component": "${PROJECT_NAME}.component",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
   "${PROJECT_NAME}/button": "${PROJECT_NAME}.button",
   "${PROJECT_NAME}/alert": "${PROJECT_NAME}.alert",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
+  "${PROJECT_NAME}/utils/domHandler": "${PROJECT_NAME}.utils.domHandler",
   "${PROJECT_NAME}/utils/dateHandler": "${PROJECT_NAME}.utils.dateHandler",
   "${PROJECT_NAME}/utils/arrayHandler": "${PROJECT_NAME}.utils.arrayHandler",
   "${PROJECT_NAME}/utils/stringHandler": "${PROJECT_NAME}.utils.stringHandler",
@@ -69,6 +71,10 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/utils/functionHandler": "${PROJECT_NAME}.utils.functionHandler",
   "${PROJECT_NAME}/utils/tailwindHandler": "${PROJECT_NAME}.utils.tailwindHandler",
   "${PROJECT_NAME}/locale/locale": "${PROJECT_NAME}.locale.locale",
+  "${PROJECT_NAME}/theme/themes/DefaultTheme": "${PROJECT_NAME}.theme.themes.DefaultTheme",
+  "${PROJECT_NAME}/theme/themes/Aurora": "${PROJECT_NAME}.theme.themes.Aurora",
+  "${PROJECT_NAME}/theme/primitive": "${PROJECT_NAME}.theme.primitive",
+  "${PROJECT_NAME}/theme/semantic": "${PROJECT_NAME}.theme.semantic",
   "${PROJECT_NAME}/theme/theme": "${PROJECT_NAME}.theme.theme",
   "${PROJECT_NAME}/utils": "${PROJECT_NAME}.utils"
 }`)
@@ -85,6 +91,7 @@ const PLUGINS = [
   babel(BABEL_PLUGIN_OPTIONS)
 ]
 const EXTERNAL_COMPONENT = [...EXTERNAL, ...Object.keys(CORE_DEPENDENCIES)]
+
 // =====================================================================================================================
 function addEntry(folder, inFile, outFile) {
   const exports = EXPORT_DEPENDENCIES.includes(inFile) ? "named" : "auto"
@@ -163,6 +170,7 @@ function addEntry(folder, inFile, outFile) {
   // entries.push(get_CJS_ESM(true))
   // entries.push(get_IIFE(true))
 }
+
 // =====================================================================================================================
 function corePlugin() {
   return {
@@ -186,6 +194,7 @@ function corePlugin() {
     }
   }
 }
+
 // =====================================================================================================================
 function addSFC(coreDir) {
   fs.readdirSync(fileURLToPath(new URL(coreDir, import.meta.url)), { withFileTypes: true })
@@ -200,17 +209,42 @@ function addSFC(coreDir) {
       })
     })
 }
+
 // =====================================================================================================================
 function addUtils() {
   addEntry("utils", "Utils.ts", "utils")
-  addEntry("utils", "objectHandler.ts", "objectHandler")
-  addEntry("utils", "tailwindHandler.ts", "tailwindHandler")
+  const utilsHandlers = [
+    "stringHandler",
+    "objectHandler",
+    "arrayHandler",
+    "dateHandler",
+    "functionHandler",
+    "tailwindHandler",
+    "domHandler"
+  ]
+  utilsHandlers.forEach((name) => addEntry("utils", `${name}.ts`, `${name}`))
+}
+
+function addBaseComponent() {
+  addEntry("component", "index.ts", "component")
+}
+
+function addTheme() {
   addEntry("theme", "theme.ts", "theme")
+  addEntry("theme", "semantic.ts", "semantic")
+  addEntry("theme", "primitive.ts", "primitive")
+  const themes = ["DefaultTheme", "Aurora"]
+  themes.forEach((name) => addEntry("theme/themes", `${name}.ts`, `${name}`))
+}
+
+function addLocale() {
   addEntry("locale", "locale.ts", "locale")
 }
+
 function addConfig() {
   addEntry("config", "index.ts", "config")
 }
+
 function copyDependencies(inFolder, outFolder, subFolder) {
   fs.readdirSync(fileURLToPath(new URL(inFolder, import.meta.url)), { withFileTypes: true })
     .filter((dir) => dir.isDirectory())
@@ -242,6 +276,7 @@ function copyDependencies(inFolder, outFolder, subFolder) {
       }
     })
 }
+
 function addPackageJson() {
   const packageJson = fs.readJsonSync(`./${CORE_LIB_DIR}/package.json`)
   const pkg = fs.readJsonSync("./package.json")
@@ -249,6 +284,7 @@ function addPackageJson() {
   !fs.existsSync(OUTPUT_LIB_DIR) && fs.mkdirSync(OUTPUT_LIB_DIR)
   fs.writeFileSync(path.resolve(OUTPUT_LIB_DIR, "package.json"), JSON.stringify(packageJson, null, "  "))
 }
+
 async function createDir(dir) {
   try {
     await fs.emptyDir(dir)
@@ -256,6 +292,7 @@ async function createDir(dir) {
     console.error(err)
   }
 }
+
 // =====================================================================================================================
 async function start() {
   await createDir(OUTPUT_LIB_DIR)
@@ -263,9 +300,13 @@ async function start() {
   fs.copySync(fileURLToPath(new URL("./README.md", import.meta.url)), `${OUTPUT_LIB_DIR}/README.md`)
   fs.copySync(fileURLToPath(new URL("./LICENSE.md", import.meta.url)), `${OUTPUT_LIB_DIR}/LICENSE.md`)
 }
+
 // =====================================================================================================================
 await start()
 addUtils()
+addBaseComponent()
+addTheme()
+addLocale()
 addConfig()
 addSFC(`./${CORE_LIB_DIR}`)
 copyDependencies(`./${CORE_LIB_DIR}/`, `${OUTPUT_LIB_DIR}/`)

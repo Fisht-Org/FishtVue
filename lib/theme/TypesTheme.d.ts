@@ -1,3 +1,4 @@
+import type { Ref } from "vue"
 import { DeepPartial, Size } from "../types"
 import { FixWindowStyle } from "fishtvue/fixwindow"
 
@@ -9,7 +10,11 @@ declare type Theme = DeepPartial<{
 }>
 
 // ----------------------
-declare function linksTheme<T extends Theme>(theme: Theme | undefined): T | undefined
+export declare function linksTheme<T extends Theme>(theme: Theme | undefined): T | undefined
+
+export declare function useStyle(css: string, options?: StyleOptions): Promise<Style>
+
+export declare function toVarsCss<T extends Record<string, string | T>>(obj: T): string
 
 // ----------------------
 type ThemePrimitive = Margin & Padding & Colors & Border & Rounded & Shadow & Opacity & Duration
@@ -19,7 +24,7 @@ type ThemeSemantic = {
   customThemeColorContrast: number
 }
 declare type ThemeComponents = {
-  fixWindow: FixWindowStyle
+  FixWindow: FixWindowStyle
   test: string
 }
 // ----------------------
@@ -123,4 +128,55 @@ type keysOpacity = 0 | 5 | 10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60 
 type keysDuration = 0 | 75 | 100 | 150 | 200 | 300 | 500 | 700 | 1000
 type keysBorder = 1 | 2 | 4 | 6 | 8
 // prettier-ignore
-type keysLength = 0 | 0.25 | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 | 16 | 20 | 24 | 28 | 32 | 36 | 40
+type keysLength =
+  0
+  | 0.25
+  | 0.5
+  | 1
+  | 1.5
+  | 2
+  | 2.5
+  | 3
+  | 3.5
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | 14
+  | 16
+  | 20
+  | 24
+  | 28
+  | 32
+  | 36
+  | 40
+
+export interface StyleOptions {
+  document?: HTMLElement
+  immediate?: boolean
+  manual?: boolean
+  name?: string
+  id?: string
+  media?: string
+  nonce?: string
+  props?: any
+  first?: boolean
+  onMounted?: (name: string) => void
+  onUpdated?: (name: string) => void
+  onLoad?: (event: Event, options: { name: string }) => void
+}
+
+export interface Style {
+  id: string | undefined
+  name: string
+  el: Ref<HTMLElement | undefined>
+  css: any
+  unload: () => void
+  load: (css?: string, props?: any) => void
+  isLoaded: Readonly<Ref<boolean>>
+}

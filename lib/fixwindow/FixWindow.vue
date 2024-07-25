@@ -3,10 +3,14 @@
   // import Button from "fishtvue/button"
   import { XMarkIcon } from "@heroicons/vue/20/solid"
   import type { FixWindowProps, FixWindowEmits, FixWindowExpose, FixWindowEvent } from "./FixWindow"
-  import { getOptions, getStyle } from "fishtvue/config"
   import { cn } from "fishtvue/utils/tailwindHandler"
-  import { deepMerge } from "fishtvue/utils/objectHandler"
-  import defaultTheme from "./themes/default"
+  import stylesComp from "./themes/styles"
+  import Component from "fishtvue/component"
+  // ---BASE-COMPONENT----------------------
+  const FixWindow = new Component<"FixWindow">()
+  FixWindow.initStyle(stylesComp)
+  const options = FixWindow.getOptions()
+  const prefix = FixWindow.getPrefix()
   // ---PROPS-EMITS-SLOTS-------------------
   const props = defineProps<FixWindowProps>()
   const emit = defineEmits<FixWindowEmits>()
@@ -20,10 +24,7 @@
   const timer = ref<number | null>(null)
   const countTimer = ref<number>(0)
   const positionMouse = ref<{ x: number; y: number }>()
-  const options = getOptions("fixWindow")
-  const globalStyles = getStyle("fixWindow")
   // ---PROPS-------------------------------
-  const styles = computed(() => deepMerge(defaultTheme, globalStyles, props.styles))
   const position = computed<NonNullable<FixWindowProps["position"]>>(
     () => props?.position ?? options?.position ?? "top"
   )
@@ -65,20 +66,6 @@
       }
     }
     return ""
-  })
-  const mode = computed<string>(() => {
-    const baseStyle =
-      "px-1 border border-neutral-200 dark:border-neutral-900 text-black text-zinc-600 dark:text-zinc-400"
-    switch (props.mode ?? options?.mode) {
-      case "filled":
-        return `${baseStyle} bg-stone-100 dark:bg-stone-900 rounded-md`
-      case "outlined":
-        return `${baseStyle} bg-white dark:bg-neutral-950 rounded-md`
-      case "underlined":
-        return `${baseStyle} bg-stone-50 dark:bg-stone-950`
-      default:
-        return ""
-    }
   })
   // ---EXPOSE------------------------------
   defineExpose<FixWindowExpose>({
@@ -463,9 +450,9 @@
     <div
       v-show="isOpen"
       ref="fixWindow"
-      :class="cn('fix-window', options?.classBody, props.classBody)"
+      :class="cn(`${prefix}fix-window`, options?.classBody, props.classBody)"
       :style="`transform: translate(${x}, ${y});${border}`">
-      <div :class="cn('fix-window-body', mode, options?.class, props?.class)">
+      <div :class="cn(`${prefix}fix-window-body`, options?.class, props?.class)">
         <slot />
       </div>
       <Button v-if="isCloseButton" mode="ghost" class="absolute top-2 right-2 px-[5px] m-0.5 h-9 w-9" @click="close">
@@ -474,4 +461,3 @@
     </div>
   </transition>
 </template>
-<style lang="scss" scoped></style>
