@@ -1,4 +1,4 @@
-import { ThemePrimitive } from "fishtvue/theme/TypesTheme"
+import type { ThemePrimitive } from "fishtvue/theme/Theme"
 
 export default <ThemePrimitive>{
   m: {
@@ -453,6 +453,8 @@ export default <ThemePrimitive>{
     700: "700ms",
     1000: "1000ms"
   },
+  white: "#ffffff",
+  black: "#000000",
   emerald: {
     50: "#ecfdf5",
     100: "#d1fae5",

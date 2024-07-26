@@ -1,7 +1,18 @@
 import type { Ref } from "vue"
 import { DeepPartial, Size } from "../types"
 import { FixWindowStyle } from "fishtvue/fixwindow"
-
+export enum NamesTheme {
+  Aurora, // (заря)
+  // Larimar, // (ларимар)
+  // Nimbus, // (нимбус)
+  // Celestia, // (селестия)
+  // Velvet, // (бархат)
+  Harmony, // (гармония)
+  // Serenity, // (безмятежность)
+  Sapphire // (сапфир)
+  // Eclipse, // (затмение)
+  // Iris // (ирис)
+}
 // ----------------------
 declare type Theme = DeepPartial<{
   primitive: ThemePrimitive
@@ -12,12 +23,17 @@ declare type Theme = DeepPartial<{
 // ----------------------
 export declare function linksTheme<T extends Theme>(theme: Theme | undefined): T | undefined
 
-export declare function useStyle(css: string, options?: StyleOptions): Promise<Style>
+export declare function useStyle(css: string, options?: StyleOptions): Style
 
 export declare function toVarsCss<T extends Record<string, string | T>>(obj: T): string
 
+export declare function palette(color: HEX): ThemeColor
+
 // ----------------------
-type ThemePrimitive = Margin & Padding & Colors & Border & Rounded & Shadow & Opacity & Duration
+export type HEX = string | "#ffffff"
+export type RGB = Record<"r" | "g" | "b", number>
+// ----------------------
+type ThemePrimitive = Margin & Padding & Colors & ColorsConst & Border & Rounded & Shadow & Opacity & Duration
 type ThemeSemantic = {
   primary: ThemeColor
   customThemeColor: number
@@ -54,6 +70,7 @@ declare type ColorScheme<T extends string> = OtherParametersScheme<T> & {
 type Margin = Record<"m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr", Record<keysLength, string>>
 type Padding = Record<"p" | "px" | "py" | "pt" | "pb" | "pl" | "pr", Record<keysLength, string>>
 type Colors = Record<namesColors, ThemeColor>
+type ColorsConst = Record<"white" | "black", string>
 type Border = Record<"borderWidth", BorderWidth>
 type Rounded = Record<"rounded", ThemeRounded>
 type Shadow = Record<"shadow", ThemeShadow>
@@ -99,7 +116,7 @@ interface Length extends Record<keysLength, string> {
   40: "160px"
 }
 
-type ThemeColor = { [key in keysColor]: string }
+export type ThemeColor = { [key in keysColor]: string }
 type namesColors =
   | "emerald"
   | "green"

@@ -9,7 +9,7 @@ import {
   StyleClass,
   DeepPick
 } from "../types"
-import { ColorScheme } from "fishtvue/theme/TypesTheme"
+import { ColorScheme } from "fishtvue/theme/Theme"
 // ---------------------------------------
 export type FixWindowEvent = "hover" | "click" | "mousedown" | "mouseup" | "dblclick" | "contextmenu" | "none"
 export declare type FixWindowProps = {

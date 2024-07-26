@@ -198,7 +198,7 @@ export function setAttributes(element: HTMLElement, attributes = {}): void {
         if (matchedEvent) {
           element.addEventListener(matchedEvent[1].toLowerCase(), value as any)
         } else if (key === "p-bind") {
-          setAttributes(element, value)
+          setAttributes(element, value as object)
         } else {
           value =
             key === "class"

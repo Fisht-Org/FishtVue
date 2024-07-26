@@ -2,11 +2,11 @@ import { FixWindowStyle } from "fishtvue/fixwindow/FixWindow"
 
 export default {
   root: {
-    duration: "{duration.1000}"
+    duration: "{duration.300}"
   },
   body: {
-    padding: "{px.4}",
-    rounded: "{rounded.sm}",
+    padding: "{px.1}",
+    rounded: "{rounded.none}",
     borderWidth: "{borderWidth.1}"
   },
   light: {
@@ -14,7 +14,7 @@ export default {
       color: "{neutral.800}"
     },
     body: {
-      background: "{stone.100}",
+      background: "{stone.50}",
       color: "{zinc.600}",
       border: "{neutral.200}"
     }
@@ -24,7 +24,7 @@ export default {
       color: "{neutral.300}"
     },
     body: {
-      background: "{stone.900}",
+      background: "{stone.950}",
       color: "{zinc.400}",
       border: "{neutral.900}"
     }

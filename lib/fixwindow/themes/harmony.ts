@@ -14,7 +14,7 @@ export default {
       color: "{neutral.800}"
     },
     body: {
-      background: "{stone.100}",
+      background: "{white}",
       color: "{zinc.600}",
       border: "{neutral.200}"
     }
@@ -24,7 +24,7 @@ export default {
       color: "{neutral.300}"
     },
     body: {
-      background: "{stone.900}",
+      background: "{neutral.950}",
       color: "{zinc.400}",
       border: "{neutral.900}"
     }

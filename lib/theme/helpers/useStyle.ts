@@ -1,4 +1,4 @@
-import { Style, StyleOptions } from "fishtvue/theme/TypesTheme"
+import { Style, StyleOptions } from "fishtvue/theme/Theme"
 import { getCurrentInstance, nextTick, onMounted, readonly, ref, watch } from "vue"
 import { isClient, isExist, setAttribute, setAttributes } from "fishtvue/utils/domHandler"
 
@@ -11,7 +11,7 @@ let _id = 0
  * @param css
  * @param options
  */
-export function useStyle(css: string, options: StyleOptions = {}): Style {
+export default (css: string, options: StyleOptions = {}): Style => {
   const isLoaded = ref(false)
   const cssRef = ref(css)
   const styleRef = ref<HTMLElement>()

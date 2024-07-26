@@ -11,6 +11,8 @@ import postcssSelectorParser from "postcss-selector-parser"
 import terser from "@rollup/plugin-terser"
 import { babel } from "@rollup/plugin-babel"
 import typescript from "rollup-plugin-typescript2"
+import cleanup from "rollup-plugin-cleanup"
+// import { uglify } from "rollup-plugin-uglify"
 // =====================================================================================================================
 const entries = []
 const core = {}
@@ -70,15 +72,14 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/utils/objectHandler": "${PROJECT_NAME}.utils.objectHandler",
   "${PROJECT_NAME}/utils/functionHandler": "${PROJECT_NAME}.utils.functionHandler",
   "${PROJECT_NAME}/utils/tailwindHandler": "${PROJECT_NAME}.utils.tailwindHandler",
+  "${PROJECT_NAME}/utils": "${PROJECT_NAME}.utils",
   "${PROJECT_NAME}/locale/locale": "${PROJECT_NAME}.locale.locale",
-  "${PROJECT_NAME}/theme/themes/DefaultTheme": "${PROJECT_NAME}.theme.themes.DefaultTheme",
+  "${PROJECT_NAME}/theme": "${PROJECT_NAME}.theme",
   "${PROJECT_NAME}/theme/themes/Aurora": "${PROJECT_NAME}.theme.themes.Aurora",
   "${PROJECT_NAME}/theme/primitive": "${PROJECT_NAME}.theme.primitive",
-  "${PROJECT_NAME}/theme/semantic": "${PROJECT_NAME}.theme.semantic",
-  "${PROJECT_NAME}/theme/theme": "${PROJECT_NAME}.theme.theme",
-  "${PROJECT_NAME}/utils": "${PROJECT_NAME}.utils"
+  "${PROJECT_NAME}/theme/semantic": "${PROJECT_NAME}.theme.semantic"
 }`)
-const EXPORT_DEPENDENCIES = ["config", "config.ts", "Alert.vue"]
+const EXPORT_DEPENDENCIES = []
 const GLOBAL_COMPONENT_DEPENDENCIES = {
   ...GLOBAL_DEPENDENCIES,
   ...CORE_DEPENDENCIES
@@ -88,7 +89,9 @@ const PLUGINS = [
   vue(),
   typescript({ tsconfigOverride: { compilerOptions: { noImplicitAny: false } } }),
   postcss(POSTCSS_PLUGIN_OPTIONS),
-  babel(BABEL_PLUGIN_OPTIONS)
+  babel(BABEL_PLUGIN_OPTIONS),
+  cleanup({ extensions: ["mjs", "ts"] })
+  // uglify()
 ]
 const EXTERNAL_COMPONENT = [...EXTERNAL, ...Object.keys(CORE_DEPENDENCIES)]
 
@@ -120,7 +123,7 @@ function addEntry(folder, inFile, outFile) {
           format: "es",
           file: `${output}${isMinify ? ".min" : ""}.mjs`,
           sourcemap: true,
-          exports: "auto"
+          exports
         }
       ]
     }
@@ -230,10 +233,10 @@ function addBaseComponent() {
 }
 
 function addTheme() {
-  addEntry("theme", "theme.ts", "theme")
+  addEntry("theme", "index.ts", "theme")
   addEntry("theme", "semantic.ts", "semantic")
   addEntry("theme", "primitive.ts", "primitive")
-  const themes = ["DefaultTheme", "Aurora"]
+  const themes = ["Aurora"]
   themes.forEach((name) => addEntry("theme/themes", `${name}.ts`, `${name}`))
 }
 

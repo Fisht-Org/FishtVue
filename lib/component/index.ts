@@ -7,9 +7,9 @@ import {
   onBeforeUnmount as vueOnBeforeUnmount,
   onUnmounted as vueOnUnmounted
 } from "vue"
-import { useStyle } from "fishtvue/theme/useStyle"
-import { toVarsCss } from "fishtvue/theme/themeHandler"
+import { useStyle, toVarsCss } from "fishtvue/theme"
 import { fieldsPick } from "fishtvue/utils/objectHandler"
+import { minifyCSS } from "fishtvue/utils/domHandler"
 import type { ComponentInternalInstance } from "vue"
 import type { ThemeComponents } from "fishtvue/theme"
 import type { ComponentsOptions, FishtVue, OptionsTheme } from "fishtvue/config"
@@ -143,10 +143,10 @@ export default class Component<T extends keyof ComponentsOptions> {
       ? `.${this.__globalOptionsTheme?.darkModeSelector}`
       : "@media (prefers-color-scheme: dark)"
     const varsCss = toVarsCss({ [this.name as string]: this.__styles } as any)
+    const layers = this.__globalOptionsTheme?.layers ?? "fishtvue"
     if (this.scopeId) {
-      const style = useStyle(stylesComp(this.scopeId, this.prefix, lightModeSelector, darkModeSelector, varsCss), {
-        name: this.name
-      })
+      const css = minifyCSS(stylesComp(this.scopeId, this.prefix, lightModeSelector, darkModeSelector, varsCss, layers))
+      const style = useStyle(css, { name: this.name })
       if (style.isLoaded) listOfStyledComponents.add(this.name)
     }
   }

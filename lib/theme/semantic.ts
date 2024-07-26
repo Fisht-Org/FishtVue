@@ -1,4 +1,4 @@
-import { ThemeSemantic } from "fishtvue/theme/TypesTheme"
+import type { ThemeSemantic } from "fishtvue/theme/Theme"
 
 export default <ThemeSemantic>{
   customThemeColor: 0,

@@ -4,7 +4,7 @@
   import { XMarkIcon } from "@heroicons/vue/20/solid"
   import type { FixWindowProps, FixWindowEmits, FixWindowExpose, FixWindowEvent } from "./FixWindow"
   import { cn } from "fishtvue/utils/tailwindHandler"
-  import stylesComp from "./themes/styles"
+  import stylesComp from "./styles"
   import Component from "fishtvue/component"
   // ---BASE-COMPONENT----------------------
   const FixWindow = new Component<"FixWindow">()
@@ -337,7 +337,7 @@
   // ---UPDATE-POSITION---------------------
   function updatePosition() {
     if (isOpen.value) {
-      const body = element.value.getBoundingClientRect()
+      const body = element.value?.getBoundingClientRect()
       const child = fixWindow.value?.getBoundingClientRect()
       if (body && child) {
         const el = <

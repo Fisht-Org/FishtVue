@@ -108,6 +108,7 @@ export type StylesComponent = (
   prefix: Prefix,
   lightModeSelector: string,
   darkModeSelector: string,
-  varsCss: string
+  varsCss: string,
+  layers: string
 ) => string
 export default Component

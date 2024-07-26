@@ -1,15 +1,15 @@
 import { Plugin } from "vue"
 import { StyleMode } from "../types"
 
-import { Locale } from "fishtvue/locale"
-import { Theme, ThemeComponents } from "fishtvue/theme/TypesTheme"
+import { Locale } from "fishtvue/locale/TypesLocale"
+import { Theme, ThemeComponents } from "fishtvue/theme"
 
 import { FixWindowOption } from "fishtvue/fixwindow"
-import { NamesTheme } from "fishtvue/theme/theme"
+import { NamesTheme } from "fishtvue/theme"
 
 export declare type FishtVue = {
   config: FishtVueConfiguration
-  useFishtVue<T extends FishtVue>(): Readonly<T> | undefined
+  useFishtVue(): Readonly<FishtVue> | undefined
   getOptions<T extends keyof ComponentsOptions>(
     component?: T
   ): keyof ComponentsOptions extends T ? Readonly<ComponentsOptions> : Readonly<ComponentsOptions[T]>
@@ -89,6 +89,7 @@ export type OptionsTheme = Partial<{
   prefix: string
   lightModeSelector: string
   darkModeSelector: string
+  layers: string | "fishtvue"
 }>
 
 export type ComponentsOptions = Partial<{

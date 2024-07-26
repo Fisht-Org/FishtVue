@@ -1,5 +1,5 @@
 {
   "main": "./theme.mjs",
   "module": "./theme.mjs",
-  "types": "./TypesTheme.d.ts"
+  "types": "./Theme.d.ts"
 }

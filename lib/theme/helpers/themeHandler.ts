@@ -1,5 +1,5 @@
-import { Theme } from "fishtvue/theme/TypesTheme"
 import { deepCopy } from "fishtvue/utils/objectHandler"
+import type { Theme } from "fishtvue/theme"
 
 const fieldNameTheme: Array<keyof Theme> = ["primitive", "semantic", "components"]
 const mask = new RegExp("{([^}]*)}", "g")
@@ -39,29 +39,4 @@ export function linksTheme<T extends Theme>(theme: Theme | undefined): T | undef
   copyTheme.semantic = setLinksTheme<Theme["semantic"]>(copyTheme.semantic, copyTheme)
   copyTheme.components = setLinksTheme<Theme["components"]>(copyTheme.components, copyTheme)
   return copyTheme
-}
-
-export function toVarsCss<T extends Record<string, string | T>>(obj: T, prefix = ""): string {
-  function flattenObject(obj: T, parentKey = "", result = {}): Record<string, string> {
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const newKey = parentKey ? `${parentKey}-${key}` : key
-        if (typeof obj[key] === "object" && obj[key] !== null) {
-          flattenObject(obj[key] as T, newKey, result)
-        } else {
-          // @ts-ignore
-          result[newKey] = obj[key]
-        }
-      }
-    }
-    return result
-  }
-
-  const resultCss = flattenObject(obj)
-  return (
-    Object.keys(resultCss).reduce(
-      (res: string, item: string) => (res += `\n    --${prefix ? prefix + "-" : ""}${item}: ${resultCss[item]};`),
-      ""
-    ) + "\n  "
-  )
 }
