@@ -168,7 +168,7 @@ export function nestedKeys(obj = {}, parentKey = ""): string[] {
     }
 
     return o
-  }, [])
+  }, []) as string[]
 }
 
 /**
@@ -281,7 +281,7 @@ export function sort(
 
  In this example, the `filter` function is called with an array of objects (`value`), an array of fields (`fields`), and a filter value (`filterValue`). It returns a new array containing the objects that have a field value matching the filter value.
  */
-export function filter<T>(value: T[], fields: T[], filterValue: string): T[] {
+export function filter<T>(value: T[], fields: Array<keyof T>, filterValue: string): T[] {
   const filteredItems: any[] = []
 
   if (value?.length) {
@@ -343,11 +343,12 @@ export function filter<T>(value: T[], fields: T[], filterValue: string): T[] {
  */
 export function reorderArray<T>(value: T[], from: number, to: number): void {
   if (value && from !== to) {
-    if (to >= value.length) {
-      to %= value.length
-      from %= value.length
-    }
-    value.splice(to, 0, value.splice(from, 1)[0])
+    const length = value.length
+    from = ((from % length) + length) % length // Ensure `from` is within bounds
+    to = ((to % length) + length) % length // Ensure `to` is within bounds
+
+    const [element] = value.splice(from, 1)
+    value.splice(to, 0, element)
   }
 }
 
@@ -358,7 +359,7 @@ export function reorderArray<T>(value: T[], from: number, to: number): void {
 
  ##### Syntax
  ```typescript
- export function findLast<T>(arr: T[], callback: () => T): T | undefined
+ export function findLast<T>(arr: T[], (value: T, index: number, array: T[]) => unknown): T | undefined
  ```
 
  ##### Parameters
@@ -388,7 +389,7 @@ export function reorderArray<T>(value: T[], from: number, to: number): void {
 
  In this example, the `findLast` function is called with an array `[1, 2, 3, 4, 5]` and a callback function that always returns `true`. It returns `5`, which is the last element in the array.
  */
-export function findLast<T>(arr: T[], callback: () => T): T | undefined {
+export function findLast<T>(arr: T[], callback: (value: T, index: number, array: T[]) => unknown): T | undefined {
   let item
   if (isNotEmpty(arr)) {
     try {
@@ -407,7 +408,7 @@ export function findLast<T>(arr: T[], callback: () => T): T | undefined {
 
  ##### Syntax
  ```typescript
- export function findLastIndex<T>(arr: T[], callback: () => T): number
+ export function findLastIndex<T>(arr: T[], callback: (value: T, index: number, array: T[]) => unknown): number
  ```
 
  ##### Parameters
@@ -437,7 +438,7 @@ export function findLast<T>(arr: T[], callback: () => T): T | undefined {
 
  In this example, the `findLastIndex` function is called with an array `[1, 2, 3, 4, 5]` and a callback function that always returns `true`. It returns `4`, which is the index of the last element in the array.
  */
-export function findLastIndex<T>(arr: T[], callback: () => T): number {
+export function findLastIndex<T>(arr: T[], callback: (value: T, index: number, array: T[]) => unknown): number {
   let index: number = -1
   if (isNotEmpty(arr)) {
     try {
@@ -536,7 +537,7 @@ export function findIndexInList<T>(value: T, list: T[]): number {
  const index = 1;
 
  insertIntoOrderedArray(item, index, array, array);
- console.log(array); // [1, 3, 4, 5, 7]
+ console.log(array); // [1, 4, 3, 5, 7]
  ```
 
  In this example, the `insertIntoOrderedArray` function is called with an array `[1, 3, 5, 7]`, an item `4`, an index `1`, and the same array `array` as the source array. The `item` is inserted at the correct position based on the specified `index`, resulting in the modified array `[1, 3, 4, 5, 7]`.
@@ -546,7 +547,7 @@ export function insertIntoOrderedArray<T>(item: T, index: number, arr: T[], sour
     let injected = false
     for (let i = 0; i < arr.length; i++) {
       const currentItemIndex = findIndexInList(arr[i], sourceArr)
-      if (currentItemIndex > index) {
+      if (currentItemIndex >= index) {
         arr.splice(i, 0, item)
         injected = true
         break

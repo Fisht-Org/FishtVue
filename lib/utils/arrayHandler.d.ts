@@ -297,7 +297,7 @@ export declare function reorderArray<T>(value: T[], from: number, to: number): v
 
  ##### Syntax
  ```typescript
- export function findLast<T>(arr: T[], callback: () => T): T | undefined
+ export function findLast<T>(arr: T[], callback: (value: T, index: number, array: T[]) => unknown): T | undefined
  ```
 
  ##### Parameters
@@ -327,7 +327,10 @@ export declare function reorderArray<T>(value: T[], from: number, to: number): v
 
  In this example, the `findLast` function is called with an array `[1, 2, 3, 4, 5]` and a callback function that always returns `true`. It returns `5`, which is the last element in the array.
  */
-export declare function findLast<T>(value: T[], callback: () => T): T | undefined
+export declare function findLast<T>(
+  value: T[],
+  callback: (value: T, index: number, array: T[]) => unknown
+): T | undefined
 
 /**
  #### `findLastIndex` Function Documentation
@@ -336,7 +339,7 @@ export declare function findLast<T>(value: T[], callback: () => T): T | undefine
 
  ##### Syntax
  ```typescript
- export function findLastIndex<T>(arr: T[], callback: () => T): number
+ export function findLastIndex<T>(arr: T[], callback: (value: T, index: number, array: T[]) => unknown): number
  ```
 
  ##### Parameters
@@ -366,7 +369,7 @@ export declare function findLast<T>(value: T[], callback: () => T): T | undefine
 
  In this example, the `findLastIndex` function is called with an array `[1, 2, 3, 4, 5]` and a callback function that always returns `true`. It returns `4`, which is the index of the last element in the array.
  */
-export declare function findLastIndex<T>(value: T[], callback: () => T): number
+export declare function findLastIndex<T>(value: T[], callback: (value: T, index: number, array: T[]) => unknown): number
 
 /**
  #### `findIndexInList` Function Documentation

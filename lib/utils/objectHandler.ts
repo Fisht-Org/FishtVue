@@ -131,9 +131,12 @@ export function isEmpty<T>(value: T) {
   return (
     value === null ||
     value === undefined ||
-    value === "" ||
+    (typeof value === "string" && value.trim() === "") ||
     (Array.isArray(value) && value.length === 0) ||
-    (!(value instanceof Date) && typeof value === "object" && Object.keys(value).length === 0)
+    (typeof value === "object" &&
+      !(value instanceof Date) &&
+      !(value instanceof RegExp) &&
+      Object.keys(value).length === 0)
   )
 }
 
@@ -186,18 +189,27 @@ export function isNotEmpty<T>(value: T) {
 
  **Note**: The `get` function can be used to retrieve values from nested objects using a path.
  */
-export function get<T>(obj: T, path: string | string[]): T | undefined {
-  if (path === "" || path.length == 0) return undefined
-  if (Array.isArray(path)) path = path.join(".")
-  const exactPath: any[] = []
-  for (let i = 0; i < path.length; i++) {
-    if (path[i] !== "[" && path[i] !== "]" && path[i] !== ".") {
-      exactPath.push(path[i])
-    }
+export function get<T>(obj: T, path: number | string | string[]): T | undefined {
+  if (typeof path === "string") {
+    path = path.replace(/\[(\w+)\]/g, ".$1") // Преобразование array notation в dot notation
+    path = path.split(".") // Разделение строки пути на массив
   }
-  const value = exactPath.reduce((source, path) => source[path], obj)
-  return value ? value : undefined
+  if (typeof path === "number") {
+    // @ts-ignore
+    return obj[path]
+  }
+  if (path.length === 0) {
+    return undefined
+  }
+  return path.reduce((acc, key) => {
+    if (acc && typeof acc === "object" && key in acc) {
+      // @ts-ignore
+      return acc[key]
+    }
+    return undefined
+  }, obj)
 }
+
 /**
  #### `fieldsOmit` Function Documentation
 
@@ -243,17 +255,25 @@ export function get<T>(obj: T, path: string | string[]): T | undefined {
 
  **Note**: The `fieldsOmit` function can be used to create a new object with specified fields omitted from the original object.
  */
-export function fieldsOmit<Structure extends Record<string, any>>(
+export function fieldsOmit<Structure extends Record<string | number, any>>(
   structure: Structure,
-  omitFields: Array<keyof Structure>
+  omitFields: Array<keyof Structure | string>
 ): Omit<Structure, Array<keyof Structure>[number]> {
-  return Object.keys(structure).reduce((acc: Record<string, any>, key: string) => {
-    if (!omitFields.includes(key as Array<keyof Structure>[number])) {
-      acc[key] = structure[key as Array<keyof Structure>[number]]
+  return Object.keys(structure).reduce((acc, key) => {
+    if (!omitFields.some((field) => field == key || (typeof field === "string" && field?.startsWith(`${key}.`)))) {
+      ;(acc as any)[key] = structure[key]
+    } else {
+      const nestedFields = omitFields
+        .filter((field) => typeof field === "string" && field.startsWith(`${key}.`))
+        .map<string>((field) => (field as string).slice(key.length + 1))
+      if (nestedFields.length > 0) {
+        ;(acc as any)[key] = fieldsOmit(structure[key], nestedFields)
+      }
     }
     return acc
-  }, {}) as Omit<Structure, Array<keyof Structure>[number]>
+  }, {} as Structure) as unknown as Pick<Structure, Array<keyof Structure>[number]>
 }
+
 /**
  #### `fieldsPick` Function Documentation
 
@@ -299,17 +319,40 @@ export function fieldsOmit<Structure extends Record<string, any>>(
 
  **Note**: The `fieldsPick` function can be used to create a new object with only specified fields picked from the original object.
  */
-export function fieldsPick<Structure extends Record<string, any>>(
+export function fieldsPick<Structure extends Record<string | number, any>>(
   structure: Structure,
-  pickFields: Array<keyof Structure>
+  pickFields: Array<keyof Structure | string>
 ): Pick<Structure, Array<keyof Structure>[number]> {
-  return Object.keys(structure).reduce((acc: Record<string, any>, key: string) => {
-    if (pickFields.includes(key as Array<keyof Structure>[number])) {
-      acc[key] = structure[key as Array<keyof Structure>[number]]
+  return pickFields?.reduce((acc, field) => {
+    const value = get(structure, field as any)
+    if (value !== undefined) {
+      const path = `${field as any}`.split(".")
+      let current = acc
+      for (let i = 0; i < path.length - 1; i++) {
+        // @ts-ignore
+        if (!current[path[i]]) current[path[i]] = {}
+        current = current[path[i]]
+      }
+      // @ts-ignore
+      current[path[path.length - 1]] = value
     }
     return acc
-  }, {}) as Pick<Structure, Array<keyof Structure>[number]>
+  }, {} as Structure) as unknown as Pick<Structure, Array<keyof Structure>[number]>
+  // return Object.keys(structure).reduce((acc: Structure, key) => {
+  //   if (!pickFields.some((field) => field != key || (typeof field === "string" && field?.startsWith(`${key}.`)))) {
+  //     acc[key] = structure[key]
+  //   } else {
+  //     const nestedFields = pickFields
+  //       .filter((field) => !(typeof field === "string" && field.startsWith(`${key}.`)))
+  //       .map((field: string) => field.slice(key.length + 1))
+  //     if (nestedFields.length > 0) {
+  //       acc[key] = fieldsOmit(structure[key], nestedFields)
+  //     }
+  //   }
+  //   return acc
+  // }, {}) as Partial<Structure>
 }
+
 /**
  #### `deepMerge` Function Documentation
 
@@ -366,6 +409,7 @@ export function deepMerge(...objects: any[]): object {
     return prev
   }, {})
 }
+
 /**
  #### `deepEquals` Function Documentation
 
@@ -421,36 +465,31 @@ export function deepEquals<A, B>(a: A, b: B): boolean {
 
     if (arrA != arrB) return false
 
-    const dateA = a instanceof Date,
-      dateB = b instanceof Date
+    const dateA = a instanceof Date
+    const dateB = b instanceof Date
 
     if (dateA != dateB) return false
     if (dateA && dateB) return a.getTime() == b.getTime()
 
-    const regexpA = a instanceof RegExp,
-      regexpB = b instanceof RegExp
+    const regexpA = a instanceof RegExp
+    const regexpB = b instanceof RegExp
 
     if (regexpA != regexpB) return false
     if (regexpA && regexpB) return a.toString() == b.toString()
 
     const keys = Object.keys(a)
-
     length = keys.length
-
     if (length !== Object.keys(b).length) return false
-
     for (i = length; i-- !== 0; ) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false
-
     for (i = length; i-- !== 0; ) {
       key = keys[i]
       if (!deepEquals((a as Record<string, any>)[key], (b as Record<string, any>)[key])) return false
     }
-
     return true
   }
-
   return a !== a && b !== b
 }
+
 /**
  #### `resolveFieldData` Function Documentation
 
@@ -488,14 +527,14 @@ export function deepEquals<A, B>(a: A, b: B): boolean {
 
  **Note**: The `resolveFieldData` function can handle various scenarios and is not limited to the example shown above.
  */
-export function resolveFieldData(data: any, field: any): any | null {
+export function resolveFieldData(data: any, field: any): any | null | undefined {
   if (!data || !field) return null
   if (field in data && isNotEmpty(data[field])) return data[field]
   if (Object.keys(data).length) {
     if (isFunction(field)) {
       return field(data)
     } else if (field.indexOf(".") === -1) {
-      return data[field]
+      return data?.[field]
     } else {
       const fields = field.split(".")
       let value = data
@@ -509,6 +548,7 @@ export function resolveFieldData(data: any, field: any): any | null {
   }
   return null
 }
+
 /**
  #### `equals` Function Documentation
 
@@ -562,6 +602,7 @@ export function equals<A, B>(obj1: A, obj2: B, field?: string): boolean {
   if (field) return resolveFieldData(obj1, field) === resolveFieldData(obj2, field)
   else return deepEquals(obj1, obj2)
 }
+
 /**
  #### `compare` Function Documentation
 
@@ -616,6 +657,7 @@ export function compare<A, B>(value1: A, value2: B, comparator: (a: A, b: B) => 
   else result = (value1 as any) < (value2 as any) ? -1 : (value1 as any) > (value2 as any) ? 1 : 0
   return result
 }
+
 /**
  #### `deepCopyObject` Function Documentation
 
@@ -665,6 +707,7 @@ export function deepCopyObject<T>(object: T): T {
   }
   return result
 }
+
 /**
  #### `deepCopy` Function Documentation
 
@@ -712,6 +755,7 @@ export function deepCopy<T>(value: T): T {
   }
   return value
 }
+
 /**
  #### `deepFreeze` Function Documentation
 
@@ -749,6 +793,7 @@ export function deepCopy<T>(value: T): T {
  **Note**: The `deepFreeze` function recursively freezes an object and its nested objects, making them immutable. It is not limited to the example shown above.
  */
 export function deepFreeze<T>(obj: T): T {
+  if (!obj) return obj
   const propNames = Object.getOwnPropertyNames(obj)
 
   for (const name of propNames) {
@@ -761,6 +806,7 @@ export function deepFreeze<T>(obj: T): T {
 
   return Object.freeze(obj)
 }
+
 /**
  #### `freeze` Function Documentation
 
@@ -802,6 +848,7 @@ export function freeze<T>(obj: T): T {
   }
   return obj
 }
+
 /**
  #### `unFreeze` Function Documentation
 
@@ -840,6 +887,7 @@ export function freeze<T>(obj: T): T {
  **Note**: The `unFreeze` function can only be used with previously frozen objects. If an object was not frozen, calling `unFreeze` on it will simply return the same object without any modifications.
  */
 export function unFreeze<T>(obj: T): T {
+  if (!obj) return obj
   if (!Object.isFrozen(obj)) return obj
   return deepCopyObject(obj)
 }

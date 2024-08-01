@@ -44,7 +44,7 @@ export default (css: string, options: StyleOptions = {}): Style => {
       (document as Document).getElementById(_id) ||
       (document as Document).createElement("style")) as HTMLElement
 
-    if (styleRef.value && !styleRef.value.isConnected) {
+    if (styleRef.value) {
       cssRef.value = _css || css
 
       setAttributes(styleRef.value, {

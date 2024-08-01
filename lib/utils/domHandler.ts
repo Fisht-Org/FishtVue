@@ -21,10 +21,11 @@
  const isElement = isElement(obj);
  ```
  */
-export function isElement(obj: HTMLElement): boolean {
-  return typeof HTMLElement === "object"
-    ? obj instanceof HTMLElement
-    : obj && typeof obj === "object" && obj.nodeType === 1
+export function isElement(obj: HTMLElement | any): boolean {
+  return (
+    obj instanceof HTMLElement ||
+    (typeof obj === "object" && obj !== null && obj.nodeType === 1 && typeof obj.nodeName === "string")
+  )
 }
 
 /**
@@ -134,8 +135,19 @@ export function isClient(): boolean {
  ```
  */
 export function setAttribute(element: HTMLElement, attribute = "", value: any): void {
-  if (isElement(element) && value !== null && value !== undefined) {
-    element.setAttribute(attribute, value)
+  // if (isElement(element) && value !== null && value !== undefined) {
+  //   element.setAttribute(attribute, value)
+  // }
+  if (isElement(element) && attribute && value !== null && value !== undefined) {
+    try {
+      element.setAttribute(attribute, value)
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "InvalidCharacterError") {
+        console.error("Invalid attribute name:", attribute)
+      } else {
+        throw error // Пробрасываем другие ошибки
+      }
+    }
   }
 }
 
@@ -237,14 +249,31 @@ export function setAttributes(element: HTMLElement, attributes = {}): void {
 
  Please note that the provided implementation does not include any additional features such as handling media queries or optimizing selectors. It focuses on basic minification by removing comments, extra spaces, and reducing the size of the CSS file.
  */
-export function minifyCSS(css: string): string {
+export function minifyCSS(css: string | any): string {
+  if (typeof css !== "string") {
+    return "" // Возвращаем пустую строку для недопустимых типов данных
+  }
+
   return css
-    ? css
-        .replace(/\/\*(?:(?!\*\/)[\s\S])*\*\/|[\r\n\t]+/g, "")
-        .replace(/ {2,}/g, " ")
-        .replace(/ ([{:}]) /g, "$1")
-        .replace(/([;,]) /g, "$1")
-        .replace(/ !/g, "!")
-        .replace(/: /g, ":")
-    : css
+    .replace(/\/\*[\s\S]*?\*\//g, "") // Удаление комментариев
+    .replace(/[\r\n\t]+/g, "") // Удаление переносов строк и табуляций
+    .replace(/ {2,}/g, " ") // Замена двух и более пробелов на один
+    .replace(/ ([{:}]) /g, "$1") // Удаление пробелов вокруг специальных символов
+    .replace(/([;,]) /g, "$1") // Удаление пробела после запятой или точки с запятой
+    .replace(/ !/g, "!") // Удаление пробела перед !important
+    .replace(/: /g, ":") // Удаление пробела после двоеточия
+    .trim() // Удаление начальных и конечных пробелов
+  // return css
+  //   .replace(/\/\*[\s\S]*?\*\//g, "") // Удаление комментариев
+  //   .replace(/\s*([{}:;,])\s*/g, "$1") // Удаление пробелов вокруг специальных символов
+  //   .replace(/;}/g, "}") // Удаление точки с запятой перед закрывающей скобкой
+  //   .replace(/\s+/g, " ") // Замена нескольких пробелов на один
+  //   .trim() // Удаление начальных и конечных пробелов
+  // return css
+  //   .replace(/\/\*[\s\S]*?\*\//g, "") // Удаление комментариев
+  //   .replace(/\s*([{}:;,])\s*/g, "$1") // Удаление пробелов вокруг специальных символов
+  //   .replace(/;\s*}/g, "}") // Удаление точки с запятой перед закрывающей скобкой
+  //   .replace(/\s*!important/g, "!important") // Удаление пробела перед !important
+  //   .replace(/\s+/g, " ") // Замена нескольких пробелов на один
+  //   .trim() // Удаление начальных и конечных пробелов
 }

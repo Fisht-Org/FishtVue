@@ -1,6 +1,7 @@
 import type { Ref } from "vue"
 import { DeepPartial, Size } from "../types"
 import { FixWindowStyle } from "fishtvue/fixwindow"
+
 export enum NamesTheme {
   Aurora, // (заря)
   // Larimar, // (ларимар)
@@ -13,8 +14,10 @@ export enum NamesTheme {
   // Eclipse, // (затмение)
   // Iris // (ирис)
 }
+
 // ----------------------
 declare type Theme = DeepPartial<{
+  name: keyof typeof NamesTheme
   primitive: ThemePrimitive
   semantic: ThemeSemantic
   components: ThemeComponents
@@ -25,7 +28,7 @@ export declare function linksTheme<T extends Theme>(theme: Theme | undefined): T
 
 export declare function useStyle(css: string, options?: StyleOptions): Style
 
-export declare function toVarsCss<T extends Record<string, string | T>>(obj: T): string
+export declare function toVarsCss<T extends Record<string, string | number | T>>(obj: T, prefix?: string): string
 
 export declare function palette(color: HEX): ThemeColor
 

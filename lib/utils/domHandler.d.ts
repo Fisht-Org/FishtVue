@@ -5,7 +5,7 @@
 
  ##### Syntax
  ```typescript
- export function isElement(obj: HTMLElement): boolean
+ export function isElement(obj: HTMLElement|any): boolean
  ```
 
  ##### Parameters
@@ -21,7 +21,7 @@
  const isElement = isElement(obj);
  ```
  */
-export declare function isElement(obj: HTMLElement): boolean
+export declare function isElement(obj: HTMLElement | any): boolean
 
 /**
  #### `getParentNode` Function Documentation
@@ -130,7 +130,7 @@ export declare function setAttributes(element: HTMLElement, attributes: object):
 
  ##### Syntax
  ```typescript
- export function minifyCSS(css: string): string
+ export function minifyCSS(css: string | any): string
  ```
 
  ##### Parameters
@@ -146,4 +146,4 @@ export declare function setAttributes(element: HTMLElement, attributes: object):
 
  Please note that the provided implementation does not include any additional features such as handling media queries or optimizing selectors. It focuses on basic minification by removing comments, extra spaces, and reducing the size of the CSS file.
  */
-export declare function minifyCSS(css: string): string
+export declare function minifyCSS(css: string | any): string

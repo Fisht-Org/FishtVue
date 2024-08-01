@@ -47,7 +47,8 @@ export function getStyle<T extends keyof ThemeComponents>(component?: T) {
 
 function isExistFishtVue<T>(fun: (FishtVue: FishtVue) => T): T | undefined {
   if (FishtVueSymbol.toString() === Symbol("FishtVue").toString()) {
-    const FishtVue: FishtVue | undefined = inject(FishtVueSymbol)
+    // @ts-ignore
+    const FishtVue: FishtVue | undefined = inject(FishtVueSymbol) ?? window.FishtVue
     if (FishtVue) return fun(FishtVue)
   }
   console.warn("FishtVue is not installed!")

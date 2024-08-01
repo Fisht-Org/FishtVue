@@ -64,11 +64,11 @@ export default class Component<T extends keyof ComponentsOptions> {
 
   constructor() {
     this.__instance = getCurrentInstance()
+    this.__globalConfig = this.__instance?.appContext.config.globalProperties.$fishtVue
+    this.__globalOptionsTheme = this.__globalConfig?.config?.optionsTheme
     this.name = this.__instance?.type.__name as T
     this.scopeId = `data-fisht-${(this.__instance?.type as any).__hmrId}`
     this.prefix = this.__globalOptionsTheme?.prefix ? `${this.__globalOptionsTheme?.prefix}-` : ""
-    this.__globalConfig = this.__instance?.appContext.config.globalProperties.$fishtVue
-    this.__globalOptionsTheme = this.__globalConfig?.config?.optionsTheme
     this.__options = this.__globalConfig?.getOptions(this.name) as ComponentsOptions[T]
     this.__styles = this.__globalConfig?.getStyle(this.name) as ThemeComponents[T]
     this.__lifeCycle()

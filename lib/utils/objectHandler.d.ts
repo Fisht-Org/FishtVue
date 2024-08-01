@@ -214,9 +214,9 @@ export declare function get<T>(obj: T, path: string | string[]): T | undefined
 
  ##### Syntax
  ```typescript
- export function fieldsOmit<Structure extends Record<string, any>>(
+ export function fieldsOmit<Structure extends Record<string | number, any>>(
  structure: Structure,
- omitFields: Array<keyof Structure>
+ omitFields: Array<keyof Structure | string>
  ): Omit<Structure, Array<keyof Structure>[number]>
  ```
 
@@ -252,9 +252,9 @@ export declare function get<T>(obj: T, path: string | string[]): T | undefined
 
  **Note**: The `fieldsOmit` function can be used to create a new object with specified fields omitted from the original object.
  */
-export declare function fieldsOmit<Structure extends Record<string, any>>(
+export declare function fieldsOmit<Structure extends Record<string | number, any>>(
   structure: Structure,
-  omitFields: Array<keyof Structure>
+  omitFields: Array<keyof Structure | string>
 ): Omit<Structure, Array<keyof Structure>[number]>
 
 /**
@@ -264,9 +264,9 @@ export declare function fieldsOmit<Structure extends Record<string, any>>(
 
  ##### Syntax
  ```typescript
- export function fieldsPick<Structure extends Record<string, any>>(
+ export function fieldsPick<Structure extends Record<string | number, any>>(
  structure: Structure,
- pickFields: Array<keyof Structure>
+ pickFields: Array<keyof Structure | string>
  ): Pick<Structure, Array<keyof Structure>[number]>
  ```
 
@@ -302,9 +302,9 @@ export declare function fieldsOmit<Structure extends Record<string, any>>(
 
  **Note**: The `fieldsPick` function can be used to create a new object with only specified fields picked from the original object.
  */
-export declare function fieldsPick<Structure extends Record<string, any>>(
+export declare function fieldsPick<Structure extends Record<string | number, any>>(
   structure: Structure,
-  pickFields: Array<keyof Structure>
+  pickFields: Array<keyof Structure | string>
 ): Pick<Structure, Array<keyof Structure>[number]>
 
 /**
@@ -421,7 +421,7 @@ export declare function deepEquals<A, B>(a: A, b: B): boolean
 
  **Note**: The `resolveFieldData` function can handle various scenarios and is not limited to the example shown above.
  */
-export declare function resolveFieldData(data: any, field: string): any | null
+export declare function resolveFieldData(data: any, field: string): any | null | undefined
 /**
  #### `equals` Function Documentation
 

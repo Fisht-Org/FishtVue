@@ -45,7 +45,7 @@ import { isFunction } from "fishtvue/utils/functionHandler"
  **Note**: The `isString` function can be used to check whether a value is a string in JavaScript. It is a common utility function used in various programming contexts.
  */
 export function isString<T>(value: T, empty = true): boolean {
-  return typeof value === "string" && (empty || value !== "")
+  return (value instanceof String || typeof value === "string") && (empty || (value !== "" && !!value.length))
 }
 
 /**
@@ -132,13 +132,13 @@ export function toFlatCase(str: string): string {
 
  **Note**: The `toKebabCase` function can be used to convert strings from various case styles to kebab case. It is commonly used in web development for creating CSS class names and URLs.
  */
-export function toKebabCase(str: string): string {
-  return isString(str)
-    ? str
-        .replace(/(_)/g, "-")
-        .replace(/[A-Z]/g, (c, i) => (i === 0 ? c : "-" + c.toLowerCase()))
-        .toLowerCase()
-    : str
+export function toKebabCase(str: any): string {
+  if (!str || !(typeof str === "string")) return str
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1-$2") // Разделяем строчные и заглавные буквы
+    .replace(/\s+/g, "-") // Заменяем пробелы на дефисы
+    .replace(/_/g, "-") // Заменяем подчеркивания на дефисы
+    .toLowerCase() // Преобразуем в нижний регистр
 }
 
 /**

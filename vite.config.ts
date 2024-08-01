@@ -1,16 +1,42 @@
-import { fileURLToPath, URL } from "node:url"
-
-// @ts-ignore
-import { defineConfig } from "vite"
+import { defineConfig } from "vitest/config"
 import vue from "@vitejs/plugin-vue"
+import { URL } from "node:url"
 
-// https://vitejs.dev/config/
+/**
+ * @vitest-config https://vitejs.dev/config/
+ */
 export default defineConfig({
   plugins: [vue()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    include: ["lib/**/*.test.ts"],
+    coverage: {
+      provider: "v8",
+      enabled: true,
+      reporter: ["text", "json", "html"],
+      include: ["lib/**/*.ts", "lib/**/*.vue"],
+      exclude: [
+        "node_modules",
+        "dist",
+        "lib/locale/**",
+        ".husky/**",
+        "**/*.d.ts",
+        "lib/**/styles.ts",
+        "lib/**/themes/**",
+        "**/*.test.ts"
+      ]
+    },
+    ui: true,
+    alias: {
+      "@": new URL("./src", import.meta.url).pathname,
+      fishtvue: new URL("./lib", import.meta.url).pathname
+    }
+  },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-      fishtvue: fileURLToPath(new URL("./lib", import.meta.url))
+      "@": new URL("./src", import.meta.url).pathname,
+      fishtvue: new URL("./lib", import.meta.url).pathname
     }
   }
 })

@@ -52,10 +52,14 @@ const shade = (color: string, percent: number) => blendColors("#000000", color, 
 
 export default (color: HEX): ThemeColor =>
   SCALES.reduce((acc: any, scale, i) => {
+    let resultColor
     if (i <= 5) {
-      acc[scale] = tint(color, (5 - i) * 19)
+      resultColor = tint(color, (5 - i) * 19)
     } else {
-      acc[scale] = shade(color, (i - 5) * 15)
+      resultColor = shade(color, (i - 5) * 15)
+    }
+    if (resultColor) {
+      acc[scale] = resultColor
     }
     return acc
   }, {})

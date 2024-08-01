@@ -4,6 +4,7 @@ import defaultSemantic from "fishtvue/theme/semantic"
 import fixWindowStyle from "fishtvue/fixwindow/themes/harmony"
 
 export default <FishtVueConfiguration["theme"]>{
+  name: "Harmony",
   primitive: defaultPrimitive,
   semantic: defaultSemantic,
   components: {

@@ -12,7 +12,6 @@ import terser from "@rollup/plugin-terser"
 import { babel } from "@rollup/plugin-babel"
 import typescript from "rollup-plugin-typescript2"
 import cleanup from "rollup-plugin-cleanup"
-// import { uglify } from "rollup-plugin-uglify"
 // =====================================================================================================================
 const entries = []
 const core = {}
@@ -91,7 +90,6 @@ const PLUGINS = [
   postcss(POSTCSS_PLUGIN_OPTIONS),
   babel(BABEL_PLUGIN_OPTIONS),
   cleanup({ extensions: ["mjs", "ts"] })
-  // uglify()
 ]
 const EXTERNAL_COMPONENT = [...EXTERNAL, ...Object.keys(CORE_DEPENDENCIES)]
 
@@ -199,6 +197,7 @@ function corePlugin() {
 }
 
 // =====================================================================================================================
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addSFC(coreDir) {
   fs.readdirSync(fileURLToPath(new URL(coreDir, import.meta.url)), { withFileTypes: true })
     .filter((dir) => dir.isDirectory())
@@ -214,6 +213,7 @@ function addSFC(coreDir) {
 }
 
 // =====================================================================================================================
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addUtils() {
   addEntry("utils", "Utils.ts", "utils")
   const utilsHandlers = [
@@ -228,10 +228,12 @@ function addUtils() {
   utilsHandlers.forEach((name) => addEntry("utils", `${name}.ts`, `${name}`))
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addBaseComponent() {
   addEntry("component", "index.ts", "component")
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addTheme() {
   addEntry("theme", "index.ts", "theme")
   addEntry("theme", "semantic.ts", "semantic")
@@ -240,14 +242,17 @@ function addTheme() {
   themes.forEach((name) => addEntry("theme/themes", `${name}.ts`, `${name}`))
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addLocale() {
   addEntry("locale", "locale.ts", "locale")
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addConfig() {
   addEntry("config", "index.ts", "config")
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function copyDependencies(inFolder, outFolder, subFolder) {
   fs.readdirSync(fileURLToPath(new URL(inFolder, import.meta.url)), { withFileTypes: true })
     .filter((dir) => dir.isDirectory())
@@ -280,6 +285,7 @@ function copyDependencies(inFolder, outFolder, subFolder) {
     })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addPackageJson() {
   const packageJson = fs.readJsonSync(`./${CORE_LIB_DIR}/package.json`)
   const pkg = fs.readJsonSync("./package.json")
@@ -288,6 +294,7 @@ function addPackageJson() {
   fs.writeFileSync(path.resolve(OUTPUT_LIB_DIR, "package.json"), JSON.stringify(packageJson, null, "  "))
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function createDir(dir) {
   try {
     await fs.emptyDir(dir)

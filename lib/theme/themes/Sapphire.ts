@@ -4,6 +4,7 @@ import defaultSemantic from "fishtvue/theme/semantic"
 import fixWindowStyle from "fishtvue/fixwindow/themes/sapphire"
 
 export default <FishtVueConfiguration["theme"]>{
+  name: "Sapphire",
   primitive: defaultPrimitive,
   semantic: defaultSemantic,
   components: {
