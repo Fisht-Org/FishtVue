@@ -1,6 +1,7 @@
 import type { Ref } from "vue"
 import { DeepPartial, Size } from "../types"
 import { FixWindowStyle } from "fishtvue/fixwindow"
+import { BadgeStyle } from "fishtvue/badge"
 
 export enum NamesTheme {
   Aurora, // (заря)
@@ -44,7 +45,7 @@ type ThemeSemantic = {
 }
 declare type ThemeComponents = {
   FixWindow: FixWindowStyle
-  test: string
+  Badge: BadgeStyle
 }
 // ----------------------
 type ColorParameters = {
