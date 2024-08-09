@@ -1,6 +1,5 @@
 import { defineConfig } from "vitest/config"
 import vue from "@vitejs/plugin-vue"
-import { URL } from "node:url"
 
 /**
  * @vitest-config https://vitejs.dev/config/
@@ -27,7 +26,7 @@ export default defineConfig({
         "**/*.test.ts"
       ]
     },
-    ui: true,
+    ui: false,
     alias: {
       "@": new URL("./src", import.meta.url).pathname,
       fishtvue: new URL("./lib", import.meta.url).pathname

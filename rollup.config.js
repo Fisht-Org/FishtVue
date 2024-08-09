@@ -2,7 +2,6 @@
 // =====================================================================================================================
 import fs from "fs-extra"
 import path from "path"
-import { fileURLToPath } from "node:url"
 // =====================================================================================================================
 import vue from "@vitejs/plugin-vue"
 import postcss from "rollup-plugin-postcss"
@@ -199,10 +198,10 @@ function corePlugin() {
 // =====================================================================================================================
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addSFC(coreDir) {
-  fs.readdirSync(fileURLToPath(new URL(coreDir, import.meta.url)), { withFileTypes: true })
+  fs.readdirSync(new URL(coreDir, import.meta.url).pathname, { withFileTypes: true })
     .filter((dir) => dir.isDirectory())
     .forEach(({ name: folderName }) => {
-      fs.readdirSync(fileURLToPath(new URL(`${coreDir}/${folderName}`, import.meta.url))).forEach((file) => {
+      fs.readdirSync(new URL(`${coreDir}/${folderName}`, import.meta.url).pathname).forEach((file) => {
         const name = file.split(/(.vue)$|(.js)$/)[0].toLowerCase()
 
         if (/\.vue$/.test(file) && name === folderName) {
@@ -254,13 +253,13 @@ function addConfig() {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function copyDependencies(inFolder, outFolder, subFolder) {
-  fs.readdirSync(fileURLToPath(new URL(inFolder, import.meta.url)), { withFileTypes: true })
+  fs.readdirSync(new URL(inFolder, import.meta.url).pathname, { withFileTypes: true })
     .filter((dir) => dir.isDirectory())
     .forEach(({ name: folderName }) => {
-      fs.readdirSync(fileURLToPath(new URL(inFolder + folderName, import.meta.url))).forEach((file) => {
+      fs.readdirSync(new URL(inFolder + folderName, import.meta.url).pathname).forEach((file) => {
         if (file === "package.json" || file.endsWith(".d.ts")) {
           fs.copySync(
-            fileURLToPath(new URL(inFolder + folderName, import.meta.url)) + "/" + file,
+            new URL(inFolder + folderName, import.meta.url).pathname + "/" + file,
             outFolder + folderName + "/" + file
           )
         }
@@ -268,16 +267,14 @@ function copyDependencies(inFolder, outFolder, subFolder) {
 
       if (subFolder) {
         try {
-          fs.readdirSync(fileURLToPath(new URL(inFolder + folderName + subFolder, import.meta.url))).forEach(
-            (subFile) => {
-              if (subFile === "package.json" || subFile.endsWith(".d.ts")) {
-                fs.copySync(
-                  fileURLToPath(new URL(inFolder + folderName + subFolder, import.meta.url)) + "/" + subFile,
-                  outFolder + folderName + subFolder + "/" + subFile
-                )
-              }
+          fs.readdirSync(new URL(inFolder + folderName + subFolder, import.meta.url).pathname).forEach((subFile) => {
+            if (subFile === "package.json" || subFile.endsWith(".d.ts")) {
+              fs.copySync(
+                new URL(inFolder + folderName + subFolder, import.meta.url).pathname + "/" + subFile,
+                outFolder + folderName + subFolder + "/" + subFile
+              )
             }
-          )
+          })
         } catch (e) {
           console.log(e)
         }
@@ -306,9 +303,9 @@ async function createDir(dir) {
 // =====================================================================================================================
 async function start() {
   await createDir(OUTPUT_LIB_DIR)
-  fs.copySync(fileURLToPath(new URL(`./${CORE_LIB_DIR}/types.d.ts`, import.meta.url)), `${OUTPUT_LIB_DIR}/types.d.ts`)
-  fs.copySync(fileURLToPath(new URL("./README.md", import.meta.url)), `${OUTPUT_LIB_DIR}/README.md`)
-  fs.copySync(fileURLToPath(new URL("./LICENSE.md", import.meta.url)), `${OUTPUT_LIB_DIR}/LICENSE.md`)
+  fs.copySync(new URL(`./${CORE_LIB_DIR}/types.d.ts`, import.meta.url).pathname, `${OUTPUT_LIB_DIR}/types.d.ts`)
+  fs.copySync(new URL("./README.md", import.meta.url).pathname, `${OUTPUT_LIB_DIR}/README.md`)
+  fs.copySync(new URL("./LICENSE.md", import.meta.url).pathname, `${OUTPUT_LIB_DIR}/LICENSE.md`)
 }
 
 // =====================================================================================================================
