@@ -3,6 +3,7 @@
   import FixWindow from "fishtvue/fixwindow/FixWindow.vue"
   import { onMounted, ref } from "vue"
   import { palette } from "fishtvue/theme"
+  import Badge from "fishtvue/badge/Badge.vue"
 
   console.log(palette("#10b981"))
   // console.log(palette("{blue}"))
@@ -57,6 +58,9 @@
   <HelloWorld :msg="isVisible ? 'Vite + Vue + Fisht' : 'Vite + Vue'" />
   <button type="button" @click="switchVisible">isVisible</button>
   <button type="button" @click="updateStyle(!switchTheme)">Update style</button>
+  <div style="display: flex">
+    <Badge point>Test</Badge>
+  </div>
   <div class="parent-block">
     <div
       v-for="(color, item) of palette(mycolor)"

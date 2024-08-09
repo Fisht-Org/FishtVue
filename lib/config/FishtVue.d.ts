@@ -4,8 +4,9 @@ import { StyleMode } from "../types"
 import { Locale } from "fishtvue/locale/TypesLocale"
 import { Theme } from "fishtvue/theme"
 
-import { FixWindowOption } from "fishtvue/fixwindow"
 import { NamesTheme } from "fishtvue/theme"
+import { FixWindowOption } from "fishtvue/fixwindow"
+import { BadgeOption } from "fishtvue/badge"
 
 export declare type FishtVue = {
   config: FishtVueConfiguration
@@ -87,5 +88,5 @@ export type OptionsTheme = Partial<{
 
 export type ComponentsOptions = Partial<{
   FixWindow: FixWindowOption
-  test: string
+  Badge: BadgeOption
 }>
