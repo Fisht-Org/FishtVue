@@ -32,6 +32,7 @@ export declare function toVarsCss<T extends Record<string, string | number | T>>
 
 export declare function palette(color: HEX): ThemeColor
 
+export declare function tailwind(color: string): string
 // ----------------------
 export type HEX = string | "#ffffff"
 export type RGB = Record<"r" | "g" | "b", number>

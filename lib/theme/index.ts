@@ -2,6 +2,7 @@ import { linksTheme } from "./helpers/themeHandler"
 import toVarsCss from "./helpers/toVarsCss"
 import palette from "./helpers/palette"
 import useStyle from "./helpers/useStyle"
+import { tailwind } from "./UnoStyle/uno"
 import type { NamesTheme as Themes } from "./Theme"
 
 const NamesTheme: (keyof typeof Themes)[] = [
@@ -17,5 +18,5 @@ const NamesTheme: (keyof typeof Themes)[] = [
   // "Iris" // (ирис)
 ]
 
-export { palette, toVarsCss, linksTheme, useStyle, NamesTheme }
-export default { palette, toVarsCss, linksTheme, useStyle, NamesTheme }
+export { tailwind, palette, toVarsCss, linksTheme, useStyle, NamesTheme }
+export default { tailwind, palette, toVarsCss, linksTheme, useStyle, NamesTheme }

@@ -151,7 +151,7 @@ export function isNotEmpty<T>(value: T) {
 
  ##### Syntax
  ```typescript
- export function get<T>(obj: T, path: string | string[]): T | undefined
+ export function get<T>(obj: T, path: string | string[], separator: string): T | undefined
  ```
 
  ##### Parameters
@@ -189,10 +189,10 @@ export function isNotEmpty<T>(value: T) {
 
  **Note**: The `get` function can be used to retrieve values from nested objects using a path.
  */
-export function get<T>(obj: T, path: number | string | string[]): T | undefined {
+export function get<T>(obj: T, path: number | string | string[], separator = "."): T | undefined {
   if (typeof path === "string") {
-    path = path.replace(/\[(\w+)\]/g, ".$1") // Преобразование array notation в dot notation
-    path = path.split(".") // Разделение строки пути на массив
+    path = path.replace(/\[(\w+)\]/g, `${separator}$1`) // Преобразование array notation в dot notation
+    path = path.split(separator) // Разделение строки пути на массив
   }
   if (typeof path === "number") {
     // @ts-ignore
