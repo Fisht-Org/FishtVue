@@ -1,4 +1,4 @@
-import { sizing } from "./uno"
+import { addAlphaToHex, sizing } from "./uno"
 import type { StyleType, GroupsRegExp } from "./UnoTypes"
 // prettier-ignore
 import {
@@ -9,23 +9,16 @@ import {
   wordBreak, borderSize, boxShadow, blend, blur, dropShadow,
   transitionProperty, transitionFunction,
   cursor, resize, snapAlign, bgClip, bgOrigin, bgRepeat, snapType, willChange,
-  borderLogical, borderSides, positionPaddingOrMargin, scale, translate, skew,
+  borderLogical, borderSides, positionPaddingOrMargin, borderSpacing, scale, translate, skew,
   aspect, floatAndClear, flex, order, gridAuto,
   justifyContent, alignContent, alignSelf, placeContent
 } from "./unoStatic"
 import { colors } from "fishtvue/theme/primitive"
 
 export default <Record<string, StyleType>>{
-  // content: {
-  //   styleName: "content",
-  //   reg: /(?<style>content)-((?<special>none)\b|(\[(?<abstract>.*?)]))/,
-  //   getValue(classStyle) {
-  //     return getTemplate(this, classStyle, (value) => value)
-  //   }
-  // },
   m: {
     styleName: "margin",
-    reg: /(?<style>m)(?<axis>[xyserltb])?-((?<special>\d+(\.\d+)?|px)|(\[(?<abstract>.*?)]))/,
+    reg: /(?<![a-zA-Z])(?<style>m)(?<axis>[xyserltb])?-((?<special>\d+(\.\d+)?|px)|(\[(?<abstract>.*?)]))/,
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
       if (groups && (groups?.special || groups?.abstract)) {
@@ -35,7 +28,7 @@ export default <Record<string, StyleType>>{
   },
   p: {
     styleName: "padding",
-    reg: /(?<style>p)(?<axis>[xyserltb])?-((?<special>\d+(\.\d+)?|px)|(\[(?<abstract>.*?)]))/,
+    reg: /(?<![a-zA-Z])(?<style>p)(?<axis>[xyserltb])?-((?<special>\d+(\.\d+)?|px)|(\[(?<abstract>.*?)]))/,
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
       if (groups && (groups?.special || groups?.abstract)) {
@@ -45,7 +38,7 @@ export default <Record<string, StyleType>>{
   },
   w: {
     styleName: "width",
-    reg: /(?<style>w)-((?<special>\d+(\.\d+)?(\/\d+)?|px|auto|full|screen|svw|lvw|dvw|min|max|fit)\b|(\[(?<abstract>.*?)]))/,
+    reg: /(?<![a-zA-Z])(?<style>w)-((?<special>\d+(\.\d+)?(\/\d+)?|px|auto|full|screen|svw|lvw|dvw|min|max|fit)\b|(\[(?<abstract>.*?)]))/,
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
       return `width: ${groups?.abstract ?? sizing(groups.special)};`
@@ -67,7 +60,7 @@ export default <Record<string, StyleType>>{
     }
   },
   h: {
-    reg: /(?<style>h)-((?<special>\d+(\.\d+)?(\/\d+)?|px|auto|full|screen|svw|lvw|dvw|min|max|fit)|(\[(?<abstract>.*?)]))/,
+    reg: /(?<![a-zA-Z])(?<style>h)-((?<special>\d+(\.\d+)?(\/\d+)?|px|auto|full|screen|svw|lvw|dvw|min|max|fit)|(\[(?<abstract>.*?)]))/,
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
       return `height: ${groups?.abstract ?? sizing(groups.special)};`
@@ -99,22 +92,32 @@ export default <Record<string, StyleType>>{
   },
   text: {
     reg: {
-      abstract: new RegExp(/(?<style>text)-(\[(?<abstract>.*?)])/),
-      size: new RegExp(/(?<style>text)-(?<special>xs|sm|base|lg|xl|\d+xl)\b/),
+      abstract: new RegExp(/(?<style>text)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      size: new RegExp(
+        `(?<style>text)-(?<special>xs|sm|base|lg|xl|\\d+xl)\\b\\/?((?<leading>\\d+|${Object.keys(lineHeight).join("|")})?\\b|(\\[(?<abstractLeading>.*?)]))?`
+      ),
       align: new RegExp(/(?<style>text)-(?<special>left|center|right|justify|start|end)\b/),
       wrap: new RegExp(/(?<style>text)-(?<special>wrap|nowrap|balance|pretty)\b/),
-      color: new RegExp(`(?<style>text)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      color: new RegExp(
+        `(?<style>text)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>text)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
     },
     getValue(classStyle) {
       const reg = this.reg as Record<"abstract" | "size" | "align" | "wrap" | "color" | "specialColor", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups?.abstract.startsWith("#")) return `color: ${groups?.abstract};`
+        if (groups?.abstract.startsWith("#"))
+          return `color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         else return `font-size: ${groups?.abstract};`
       } else if (reg.size.test(classStyle)) {
         const groups = classStyle.match(reg.size)?.groups as GroupsRegExp
-        return textSize[groups.special]
+        return textSize[groups.special](
+          groups?.abstractLeading ?? (isNaN(+groups?.leading) ? lineHeight[groups?.leading] : sizing(groups?.leading))
+        )
       } else if (reg.align.test(classStyle)) {
         const groups = classStyle.match(reg.align)?.groups as GroupsRegExp
         return `text-align: ${groups.special};`
@@ -123,7 +126,10 @@ export default <Record<string, StyleType>>{
         return `text-wrap: ${groups.special};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `color: ${specialColor[groups.special]};`
@@ -132,8 +138,12 @@ export default <Record<string, StyleType>>{
   },
   decoration: {
     reg: {
-      abstract: new RegExp(/(?<style>decoration)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>decoration)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(
+        /(?<style>decoration)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/
+      ),
+      color: new RegExp(
+        `(?<style>decoration)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>decoration)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       style: new RegExp(/(?<style>decoration)-(?<special>solid|double|dotted|dashed|wavy)\b/),
       thickness: new RegExp(/(?<style>decoration)-(?<special>0|1|2|4|8|auto|from-font)\b/)
@@ -142,11 +152,18 @@ export default <Record<string, StyleType>>{
       const reg = this.reg as Record<"abstract" | "color" | "specialColor" | "style" | "thickness", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `text-decoration-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `text-decoration-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         else return `text-decoration-thickness: ${groups?.abstract};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `text-decoration-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `text-decoration-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `text-decoration-color: ${specialColor[groups.special]};`
@@ -344,8 +361,10 @@ export default <Record<string, StyleType>>{
   },
   bg: {
     reg: {
-      abstract: new RegExp(/(?<style>bg)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>bg)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(/(?<style>bg)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      color: new RegExp(
+        `(?<style>bg)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>bg)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       position: new RegExp(`(?<style>bg)-(?<special>${Object.keys(positionsBackground).join("|")})\\b`),
       attachment: new RegExp(`(?<style>bg)-(?<special>${Object.keys(attachmentBackground).join("|")})\\b`),
@@ -359,14 +378,21 @@ export default <Record<string, StyleType>>{
       >
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `background-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `background-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         else if (groups.abstract.startsWith("length:"))
           return `background-size: ${groups?.abstract.replace("length:", "").replace(/_/g, " ")};`
         else if (groups.abstract.startsWith("url")) return `background-image: ${groups?.abstract};`
         else return `background-position: ${groups?.abstract.replace(/_/g, " ")};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `background-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `background-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `background-color: ${specialColor[groups.special]};`
@@ -387,8 +413,10 @@ export default <Record<string, StyleType>>{
   },
   from: {
     reg: {
-      abstract: new RegExp(/(?<style>from)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>from)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(/(?<style>from)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      color: new RegExp(
+        `(?<style>from)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>from)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       position: new RegExp(`(?<style>from)-(?<special>\\d+%)`)
     },
@@ -397,10 +425,16 @@ export default <Record<string, StyleType>>{
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
         if (groups.abstract.startsWith("#"))
-          return `--tw-gradient-from: ${groups?.abstract} var(--tw-gradient-from-position);\n  --tw-gradient-to: ${groups?.abstract}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);`
+          return `--tw-gradient-from: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )} var(--tw-gradient-from-position);\n  --tw-gradient-to: ${groups?.abstract}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `--tw-gradient-from: ${(colors as any)?.[groups.special]?.[groups.tone]} var(--tw-gradient-from-position);\n  --tw-gradient-to: ${(colors as any)?.[groups.special]?.[groups.tone]}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);`
+        return `--tw-gradient-from: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )} var(--tw-gradient-from-position);\n  --tw-gradient-to: ${(colors as any)?.[groups.special]?.[groups.tone]}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `--tw-gradient-from: ${specialColor[groups.special]} var(--tw-gradient-from-position);\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);`
@@ -412,8 +446,10 @@ export default <Record<string, StyleType>>{
   },
   via: {
     reg: {
-      abstract: new RegExp(/(?<style>via)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>via)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(/(?<style>via)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      color: new RegExp(
+        `(?<style>via)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>via)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       position: new RegExp(`(?<style>via)-(?<special>\\d+%)`)
     },
@@ -422,13 +458,19 @@ export default <Record<string, StyleType>>{
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
         if (groups.abstract.startsWith("#"))
-          return `--tw-gradient-to: ${groups?.abstract}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), ${groups?.abstract} var(--tw-gradient-via-position), var(--tw-gradient-to);`
+          return `--tw-gradient-to: ${groups?.abstract}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )} var(--tw-gradient-via-position), var(--tw-gradient-to);`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `--tw-gradient-to: ${(colors as any)?.[groups.special]?.[groups.tone]}00  var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), ${(colors as any)?.[groups.special]?.[groups.tone]} var(--tw-gradient-via-position), var(--tw-gradient-to);`
+        return `--tw-gradient-to: ${(colors as any)?.[groups.special]?.[groups.tone]}00 var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )} var(--tw-gradient-via-position), var(--tw-gradient-to);`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
-        return `--tw-gradient-to: rgb(255 255 255 / 0)  var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), ${specialColor[groups.special]} var(--tw-gradient-via-position), var(--tw-gradient-to);`
+        return `--tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), ${specialColor[groups.special]} var(--tw-gradient-via-position), var(--tw-gradient-to);`
       } else if (reg.position.test(classStyle)) {
         const groups = classStyle.match(reg.position)?.groups as GroupsRegExp
         return `--tw-gradient-from-position: ${groups.special.replace("-", " ")};`
@@ -437,8 +479,10 @@ export default <Record<string, StyleType>>{
   },
   to: {
     reg: {
-      abstract: new RegExp(/(?<style>to)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>to)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(/(?<style>to)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      color: new RegExp(
+        `(?<style>to)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>to)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       position: new RegExp(`(?<style>to)-(?<special>\\d+%)`)
     },
@@ -447,10 +491,16 @@ export default <Record<string, StyleType>>{
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
         if (groups.abstract.startsWith("#"))
-          return `--tw-gradient-to: ${groups?.abstract} var(--tw-gradient-to-position);`
+          return `--tw-gradient-to: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )} var(--tw-gradient-to-position);`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `--tw-gradient-to: ${(colors as any)?.[groups.special]?.[groups.tone]} var(--tw-gradient-to-position);`
+        return `--tw-gradient-to: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )} var(--tw-gradient-to-position);`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `--tw-gradient-to: ${specialColor[groups.special]} var(--tw-gradient-to-position);`
@@ -458,6 +508,13 @@ export default <Record<string, StyleType>>{
         const groups = classStyle.match(reg.position)?.groups as GroupsRegExp
         return `--tw-gradient-to-position: ${groups.special.replace("-", " ")};`
       }
+    }
+  },
+  "border-spacing": {
+    reg: /(?<style>border-spacing)-(?<axis>[xy])?-?((?<special>\d+(\.\d+)?(\/\d+)?|px)\b|(\[(?<abstract>.*?)]))/,
+    getValue(classStyle) {
+      const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
+      return borderSpacing[groups.axis](groups.abstract ?? sizing(groups.special))
     }
   },
   rounded: {
@@ -472,48 +529,72 @@ export default <Record<string, StyleType>>{
   border: {
     reg: {
       sides: new RegExp(
-        `(?<style>border)-?(?<axis>${Object.keys(borderSides).join("|")})?\\b-?((?<special>\\d+)|(\\[(?<abstract>.*?)]))?`
+        `(?<style>border)-?(?<axis>${Object.keys(borderSides).join("|")})?\\b-?((?<special>\\d+)|(\\[(?<abstract>.*?)]\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?))?`
       ),
       style: /(?<style>border)-(?<special>solid|dashed|dotted|double|hidden|none)\b/,
-      color: new RegExp(`(?<style>border)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
-      specialColor: new RegExp(`(?<style>border)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
+      color: new RegExp(
+        `(?<style>border)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
+      specialColor: new RegExp(`(?<style>border)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
+      table: /(?<style>border)-(?<special>collapse|separate)\b/
     },
     getValue(classStyle) {
-      const reg = this.reg as Record<"sides" | "style" | "color" | "specialColor", RegExp>
+      const reg = this.reg as Record<"sides" | "style" | "color" | "specialColor" | "table", RegExp>
       if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `border-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `border-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `border-color: ${specialColor[groups.special]};`
       } else if (reg.style.test(classStyle)) {
         const groups = classStyle.match(reg.style)?.groups as GroupsRegExp
         return `border-style: ${groups.special};`
+      } else if (reg.table.test(classStyle)) {
+        const groups = classStyle.match(reg.table)?.groups as GroupsRegExp
+        return `border-collapse: ${groups.special};`
       } else if (reg.sides.test(classStyle)) {
         const groups = classStyle.match(reg.sides)?.groups as GroupsRegExp
-        if (groups.abstract?.startsWith("#")) return `border-color: ${groups?.abstract};`
+        if (groups.abstract?.startsWith("#"))
+          return `border-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         return borderSides[groups.axis](groups?.abstract ?? (groups?.special ?? 1) + "px")
       }
     }
   },
   outline: {
     reg: {
-      abstract: new RegExp(/(?<style>outline)-(\[(?<abstract>.*?)])/),
+      abstract: new RegExp(
+        /(?<style>outline)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/
+      ),
       width: /(?<style>outline)-(?<special>\d+)/,
       offset: /(?<style>outline-offset)-((?<special>\d+)|(\[(?<abstract>.*?)]))/,
       style: /(?<style>outline)-(?<special>dashed|dotted|double)\b/,
-      color: new RegExp(`(?<style>outline)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      color: new RegExp(
+        `(?<style>outline)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>outline)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
     },
     getValue(classStyle) {
       const reg = this.reg as Record<"abstract" | "width" | "offset" | "style" | "color" | "specialColor", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `outline-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `outline-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         return `outline-width: ${groups?.abstract};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `outline-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `outline-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `outline-color: ${specialColor[groups.special]};`
@@ -531,12 +612,17 @@ export default <Record<string, StyleType>>{
   },
   ring: {
     reg: {
-      abstract: new RegExp(/(?<style>ring)-(\[(?<abstract>.*?)])/),
+      abstract: new RegExp(/(?<style>ring)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
       width: /(?<style>ring)-(?<special>\d+)/,
-      offset: /(?<style>ring-offset)-((?<special>\d+)|(\[(?<abstract>.*?)]))/,
-      color: new RegExp(`(?<style>ring)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      offset:
+        /(?<style>ring-offset)-((?<special>\d+)|(\[(?<abstract>.*?)]))\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/,
+      color: new RegExp(
+        `(?<style>ring)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>ring)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
-      colorOffset: new RegExp(`(?<style>ring-offset)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      colorOffset: new RegExp(
+        `(?<style>ring-offset)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColorOffset: new RegExp(`(?<style>ring-offset)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
     },
     getValue(classStyle) {
@@ -546,17 +632,27 @@ export default <Record<string, StyleType>>{
       >
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `--tw-ring-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `--tw-ring-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         return `--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);\n  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(${groups?.abstract} + var(--tw-ring-offset-width)) var(--tw-ring-color);\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);`
       } else if (reg.colorOffset.test(classStyle)) {
         const groups = classStyle.match(reg.colorOffset)?.groups as GroupsRegExp
-        return `--tw-ring-offset-color: ${(colors as any)?.[groups.special]?.[groups.tone]};\n  box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), var(--tw-ring-shadow);`
+        return `--tw-ring-offset-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};\n  box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), var(--tw-ring-shadow);`
       } else if (reg.specialColorOffset.test(classStyle)) {
         const groups = classStyle.match(reg.specialColorOffset)?.groups as GroupsRegExp
         return `--tw-ring-offset-color: ${specialColor[groups.special]};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `--tw-ring-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `--tw-ring-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `--tw-ring-color: ${specialColor[groups.special]};`
@@ -567,7 +663,10 @@ export default <Record<string, StyleType>>{
         const groups = classStyle.match(reg.offset)?.groups as GroupsRegExp
         if (groups.abstract) {
           if (groups.abstract.startsWith("#"))
-            return `box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), var(--tw-ring-shadow);\n  --tw-ring-offset-color: ${groups?.abstract};`
+            return `--tw-ring-offset-color: ${addAlphaToHex(
+              groups?.abstract,
+              groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+            )};\n  box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), var(--tw-ring-shadow);`
           return `--tw-ring-offset-width: ${groups?.abstract};`
         }
         return `--tw-ring-offset-width: ${groups.special}px;\n  box-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), var(--tw-ring-shadow);`
@@ -576,20 +675,31 @@ export default <Record<string, StyleType>>{
   },
   shadow: {
     reg: {
-      abstract: new RegExp(/(?<style>shadow)-(\[(?<abstract>.*?)])/),
+      abstract: new RegExp(
+        /(?<style>shadow)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/
+      ),
       size: new RegExp(`(?<style>shadow)-(?<special>${Object.keys(boxShadow).join("|")})\\b`),
-      color: new RegExp(`(?<style>shadow)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      color: new RegExp(
+        `(?<style>shadow)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>shadow)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
     },
     getValue(classStyle) {
       const reg = this.reg as Record<"abstract" | "size" | "color" | "specialColor", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `--tw-shadow-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `--tw-shadow-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         return `--tw-shadow: ${groups?.abstract.replace(/_/g, " ")};\n  --tw-shadow-colored: ${groups?.abstract.replace(/_(rgb)a?\(.*\)/g, "").replace(/_/g, " ")} var(--tw-shadow-color);\n  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `--tw-shadow-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `--tw-shadow-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `--tw-shadow-color: ${specialColor[groups.special]};`
@@ -632,7 +742,7 @@ export default <Record<string, StyleType>>{
     reg: new RegExp(`(?<style>contrast)-((?<special>\\d+)\\b|(\\[(?<abstract>.*?)]))`),
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
-      return `--tw-contrast: contrast(${groups?.abstract ?? +groups.special / 100});\n  ${baseFilter}`
+      if (groups) return `--tw-contrast: contrast(${groups?.abstract ?? +groups.special / 100});\n  ${baseFilter}`
     }
   },
   "drop-shadow": {
@@ -819,18 +929,29 @@ export default <Record<string, StyleType>>{
   },
   accent: {
     reg: {
-      abstract: new RegExp(/(?<style>accent)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>accent)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(
+        /(?<style>accent)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/
+      ),
+      color: new RegExp(
+        `(?<style>accent)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>accent)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
     },
     getValue(classStyle) {
       const reg = this.reg as Record<"abstract" | "color" | "specialColor", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `accent-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `accent-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `accent-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `accent-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `accent-color: ${specialColor[groups.special]};`
@@ -853,18 +974,27 @@ export default <Record<string, StyleType>>{
   },
   caret: {
     reg: {
-      abstract: new RegExp(/(?<style>caret)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>caret)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(/(?<style>caret)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      color: new RegExp(
+        `(?<style>caret)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>caret)-(?<special>${Object.keys(specialColor).join("|")})\\b`)
     },
     getValue(classStyle) {
       const reg = this.reg as Record<"abstract" | "color" | "specialColor", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `caret-color: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `caret-color: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `caret-color: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `caret-color: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `caret-color: ${specialColor[groups.special]};`
@@ -954,8 +1084,10 @@ export default <Record<string, StyleType>>{
   },
   fill: {
     reg: {
-      abstract: new RegExp(/(?<style>fill)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>fill)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(/(?<style>fill)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/),
+      color: new RegExp(
+        `(?<style>fill)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>fill)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       noneColor: /(?<style>fill)-(?<special>none)\b/
     },
@@ -963,10 +1095,17 @@ export default <Record<string, StyleType>>{
       const reg = this.reg as Record<"abstract" | "color" | "specialColor" | "noneColor", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `fill: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `fill: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `fill: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `fill: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `fill: ${specialColor[groups.special]};`
@@ -978,8 +1117,12 @@ export default <Record<string, StyleType>>{
   },
   stroke: {
     reg: {
-      abstract: new RegExp(/(?<style>stroke)-(\[(?<abstract>.*?)])/),
-      color: new RegExp(`(?<style>stroke)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)`),
+      abstract: new RegExp(
+        /(?<style>stroke)-(\[(?<abstract>.*?)])\/?((?<opacity>\d+)\b|(\[(?<abstractOpacity>.*?)]))?/
+      ),
+      color: new RegExp(
+        `(?<style>stroke)-(?<special>${Object.keys(colors).join("|")})\\b-(?<tone>\\d+)\\/?((?<opacity>\\d+)\\b|(\\[(?<abstractOpacity>.*?)]))?`
+      ),
       specialColor: new RegExp(`(?<style>stroke)-(?<special>${Object.keys(specialColor).join("|")})\\b`),
       noneColor: /(?<style>stroke)-(?<special>none)\b/,
       width: /(?<style>stroke)-(?<special>\d+)\b/
@@ -988,11 +1131,18 @@ export default <Record<string, StyleType>>{
       const reg = this.reg as Record<"abstract" | "color" | "specialColor" | "noneColor" | "width", RegExp>
       if (reg.abstract.test(classStyle)) {
         const groups = classStyle.match(reg.abstract)?.groups as GroupsRegExp
-        if (groups.abstract.startsWith("#")) return `stroke: ${groups?.abstract};`
+        if (groups.abstract.startsWith("#"))
+          return `stroke: ${addAlphaToHex(
+            groups?.abstract,
+            groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+          )};`
         return `stroke-width: ${groups?.abstract};`
       } else if (reg.color.test(classStyle)) {
         const groups = classStyle.match(reg.color)?.groups as GroupsRegExp
-        return `stroke: ${(colors as any)?.[groups.special]?.[groups.tone]};`
+        return `stroke: ${addAlphaToHex(
+          (colors as any)?.[groups.special]?.[groups.tone],
+          groups.abstractOpacity ? +groups.abstractOpacity : groups.opacity ? +groups.opacity / 100 : undefined
+        )};`
       } else if (reg.specialColor.test(classStyle)) {
         const groups = classStyle.match(reg.specialColor)?.groups as GroupsRegExp
         return `stroke: ${specialColor[groups.special]};`
@@ -1040,9 +1190,25 @@ export default <Record<string, StyleType>>{
     }
   },
   table: {
-    reg: /(?<style>inline)-(?<special>caption|cell|column|column-group|footer-group|header-group|row-group|row)\b/,
+    reg: {
+      layout: /(?<style>table)-(?<special>auto|fixed)\b/,
+      inline: /(?<style>table)-(?<special>caption|cell|column|column-group|footer-group|header-group|row-group|row)\b/
+    },
     getValue(classStyle) {
-      return `display: ${classStyle};`
+      const reg = this.reg as Record<"layout" | "inline", RegExp>
+      if (reg.inline.test(classStyle)) {
+        return `display: ${classStyle};`
+      } else if (reg.layout.test(classStyle)) {
+        const groups = classStyle.match(reg.layout)?.groups as GroupsRegExp
+        return `table-layout: ${groups.special};`
+      }
+    }
+  },
+  caption: {
+    reg: /(?<style>caption)-(?<special>top|bottom)\b/,
+    getValue(classStyle) {
+      const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
+      return `caption-side: ${groups.special};`
     }
   },
   float: {
@@ -1196,7 +1362,7 @@ export default <Record<string, StyleType>>{
     }
   },
   order: {
-    reg: new RegExp(`(?<style>order)-((?<special>${Object.keys(order).join("|")})\\b|(\\[(?<abstract>-?\\d+)]))`),
+    reg: new RegExp(`(?<style>order)-((?<special>\\d+|${Object.keys(order).join("|")})\\b|(\\[(?<abstract>-?\\d+)]))`),
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
       return `order: ${groups?.abstract ?? (isNaN(+groups.special) ? order[groups?.special] : groups.special)};`
@@ -1327,9 +1493,10 @@ export default <Record<string, StyleType>>{
     }
   },
   content: {
-    reg: new RegExp(`(?<style>content)-(?<special>${Object.keys(alignContent).join("|")})\\b`),
+    reg: new RegExp(`(?<style>content)-((?<special>${Object.keys(alignContent).join("|")})\\b|(\\[(?<abstract>.*?)]))`),
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
+      if (groups.abstract) return `--tw-content: ${groups.abstract};\n  content: var(--tw-content);`
       return `align-content: ${alignContent[groups?.special]};`
     }
   },

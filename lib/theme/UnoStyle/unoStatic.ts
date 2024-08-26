@@ -1,3 +1,5 @@
+import { PseudoClasses } from "fishtvue/theme/UnoStyle/UnoTypes"
+
 export const baseFilter = `filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);`
 export const baseBackdropFilter = `-webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);\n  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);`
 export const baseTransition = `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);\n  transition-duration: 150ms;`
@@ -122,21 +124,6 @@ export const positionsBackground = {
   left: "left",
   right: "right",
   top: "top"
-}
-export const textSize: Record<string, string> = {
-  xs: "font-size: 0.75rem;\n  line-height: 1rem;",
-  sm: "font-size: 0.875rem;\n  line-height: 1.25rem;",
-  base: "font-size: 1rem;\n  line-height: 1.5rem;",
-  lg: "font-size: 1.125rem;\n  line-height: 1.75rem;",
-  xl: "font-size: 1.25rem;\n  line-height: 1.75rem;",
-  "2xl": "font-size: 1.5rem;\n  line-height: 2rem;",
-  "3xl": "font-size: 1.875rem;\n  line-height: 2.25rem;",
-  "4xl": "font-size: 2.25rem;\n  line-height: 2.5rem;",
-  "5xl": "font-size: 3rem;\n  line-height: 1;",
-  "6xl": "font-size: 3.75rem;\n  line-height: 1;",
-  "7xl": "font-size: 4.5rem;\n  line-height: 1;",
-  "8xl": "font-size: 6rem;\n  line-height: 1;",
-  "9xl": "font-size: 8rem;\n  line-height: 1;"
 }
 export const fontFamily: Record<string, string> = {
   sans: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
@@ -441,6 +428,11 @@ export const positionPaddingOrMargin: Record<string, (styleName: string, value: 
   t: (styleName, value) => `${styleName}-top: ${value};`,
   b: (styleName, value) => `${styleName}-bottom: ${value};`
 }
+export const borderSpacing: Record<string, (value: string) => string> = {
+  undefined: (value) => `border-spacing: ${value} ${value};`,
+  x: (value) => `border-spacing: ${value} var(--tw-border-spacing-y);`,
+  y: (value) => `border-spacing: var(--tw-border-spacing-x) ${value};`
+}
 export const scale: Record<string, (value: string) => string> = {
   undefined: (value) => `--tw-scale-x: ${value};\n  --tw-scale-y: ${value};\n  ${baseTransform}`,
   x: (value) => `--tw-scale-x: ${value};\n  ${baseTransform}`,
@@ -454,4 +446,114 @@ export const translate: Record<string, (value: string) => string> = {
 export const skew: Record<string, (value: string) => string> = {
   x: (value) => `--tw-skew-x: ${value};\n  ${baseTransform}`,
   y: (value) => `--tw-skew-y: ${value};\n  ${baseTransform}`
+}
+export const textSize: Record<string, (value?: string) => string> = {
+  xs: (value?: string) => `font-size: 0.75rem;\n  line-height: ${value ?? "1rem"};`,
+  sm: (value?: string) => `font-size: 0.875rem;\n  line-height: ${value ?? "1.25rem"};`,
+  base: (value?: string) => `font-size: 1rem;\n  line-height: ${value ?? "1.5rem"};`,
+  lg: (value?: string) => `font-size: 1.125rem;\n  line-height: ${value ?? "1.75rem"};`,
+  xl: (value?: string) => `font-size: 1.25rem;\n  line-height: ${value ?? "1.75rem"};`,
+  "2xl": (value?: string) => `font-size: 1.5rem;\n  line-height: ${value ?? "2rem"};`,
+  "3xl": (value?: string) => `font-size: 1.875rem;\n  line-height: ${value ?? "2.25rem"};`,
+  "4xl": (value?: string) => `font-size: 2.25rem;\n  line-height: ${value ?? "2.5rem"};`,
+  "5xl": (value?: string) => `font-size: 3rem;\n  line-height: ${value ?? "1"};`,
+  "6xl": (value?: string) => `font-size: 3.75rem;\n  line-height: ${value ?? "1"};`,
+  "7xl": (value?: string) => `font-size: 4.5rem;\n  line-height: ${value ?? "1"};`,
+  "8xl": (value?: string) => `font-size: 6rem;\n  line-height: ${value ?? "1"};`,
+  "9xl": (value?: string) => `font-size: 8rem;\n  line-height: ${value ?? "1"};`
+}
+export const userInteractionStates = {
+  hover: ":hover",
+  focus: ":focus",
+  "focus-within": ":focus-within",
+  "focus-visible": ":focus-visible",
+  active: ":active",
+  visited: ":visited",
+  target: ":target"
+} satisfies PseudoClasses["userInteractionStates"]
+export const formElementStates = {
+  disabled: ":disabled",
+  enabled: ":enabled",
+  checked: ":checked",
+  indeterminate: ":indeterminate",
+  default: ":default",
+  required: ":required",
+  valid: ":valid",
+  invalid: ":invalid",
+  "in-range": ":in-range",
+  "out-of-range": ":out-of-range",
+  "placeholder-shown": ":placeholder-shown",
+  autofill: ":autofill",
+  "read-only": ":read-only"
+} satisfies PseudoClasses["formElementStates"]
+export const structuralPseudoClasses = {
+  first: ":first-child",
+  last: ":last-child",
+  only: ":only-child",
+  odd: ":nth-child(odd)",
+  even: ":nth-child(even)",
+  "first-of-type": ":first-of-type",
+  "last-of-type": ":last-of-type",
+  "only-of-type": ":only-of-type",
+  empty: ":empty"
+} satisfies PseudoClasses["structuralPseudoClasses"]
+export const pseudoContent = {
+  before: "::before",
+  after: "::after"
+} satisfies PseudoClasses["pseudoContent"]
+export const pseudoElements = {
+  "first-letter": "::first-letter",
+  "first-line": "::first-line",
+  marker: "::marker",
+  selection: "::selection",
+  file: "::file-selector-button",
+  backdrop: "::backdrop",
+  placeholder: "::placeholder"
+} satisfies PseudoClasses["pseudoElements"]
+export const specialStates = {
+  open: "[open]",
+  rtl: `:where([dir="rtl"], [dir="rtl"] *)`,
+  ltr: `:where([dir="ltr"], [dir="ltr"] *)`
+} satisfies PseudoClasses["specialStates"]
+export const media: Record<string, string> = {
+  dark: "@media (prefers-color-scheme: dark)",
+  sm: "@media (min-width: 640px)",
+  md: "@media (min-width: 768px)",
+  lg: "@media (min-width: 1024px)",
+  xl: "@media (min-width: 1280px)",
+  "2xl": "@media (min-width: 1536px)",
+  "max-sm": "@media not all and (min-width: 640px)",
+  "max-md": "@media not all and (min-width: 768px)",
+  "max-lg": "@media not all and (min-width: 1024px)",
+  "max-xl": "@media not all and (min-width: 1280px)",
+  "max-2xl": "@media not all and (min-width: 1536px)",
+  "motion-safe": "@media (prefers-reduced-motion: no-preference)",
+  "motion-reduce": "@media (prefers-reduced-motion: reduce)",
+  "contrast-more": "@media (prefers-contrast: more)",
+  "contrast-less": "@media (prefers-contrast: less)",
+  "forced-colors": "@media (forced-colors: active)",
+  portrait: "@media (orientation: portrait)",
+  landscape: "@media (orientation: landscape)",
+  print: "@media print"
+}
+
+export const mediaDynamic: Record<string, (value: string) => string> = {
+  min: (value) => `@media (min-width: ${value})`,
+  max: (value) => `@media (max-width: ${value})`,
+  supports: (value) => `@supports (${value})`
+}
+export const selectors: Record<string, string> = {
+  "aria-busy": `[aria-busy="true"]`,
+  "aria-checked": `[aria-checked="true"]`,
+  "aria-disabled": `[aria-disabled="true"]`,
+  "aria-expanded": `[aria-expanded="true"]`,
+  "aria-hidden": `[aria-hidden="true"]`,
+  "aria-pressed": `[aria-pressed="true"]`,
+  "aria-readonly": `[aria-readonly="true"]`,
+  "aria-required": `[aria-required="true"]`,
+  "aria-selected": `[aria-selected="true"]`
+}
+export const selectorsDynamic: Record<string, (value: string) => string> = {
+  aria: (value) => `[aria-${value.replace(/=([\w.-]+)/, '="$1"')}]`,
+  data: (value) => `[data-${value.replace(/=([\w.-]+)/, '="$1"')}]`
 }
