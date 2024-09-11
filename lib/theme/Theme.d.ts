@@ -32,7 +32,8 @@ export declare function toVarsCss<T extends Record<string, string | number | T>>
 
 export declare function palette(color: HEX): ThemeColor
 
-export declare function tailwind(color: string): string
+export declare function tailwind(color: string, options?: Partial<{ selector: string; darkSelector: string }>): string
+
 // ----------------------
 export type HEX = string | "#ffffff"
 export type RGB = Record<"r" | "g" | "b", number>
@@ -71,15 +72,15 @@ declare type ColorScheme<T extends string> = OtherParametersScheme<T> & {
   dark: ColorParametersScheme<T>
 }
 // ----------------------
-type Margin = Record<"m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr", Record<keysLength, string>>
-type Padding = Record<"p" | "px" | "py" | "pt" | "pb" | "pl" | "pr", Record<keysLength, string>>
-type Colors = Record<namesColors, ThemeColor>
-type ColorsConst = Record<"white" | "black", string>
-type Border = Record<"borderWidth", BorderWidth>
-type Rounded = Record<"rounded", ThemeRounded>
-type Shadow = Record<"shadow", ThemeShadow>
-type Opacity = Record<"opacity", ThemeOpacity>
-type Duration = Record<"duration", ThemeDuration>
+export declare type Margin = Record<"m" | "mx" | "my" | "mt" | "mb" | "ml" | "mr", Record<keysLength, string>>
+export declare type Padding = Record<"p" | "px" | "py" | "pt" | "pb" | "pl" | "pr", Record<keysLength, string>>
+export declare type Colors = Record<namesColors, ThemeColor>
+export declare type ColorsConst = Record<"white" | "black", string>
+export declare type Border = Record<"borderWidth", BorderWidth>
+export declare type Rounded = Record<"rounded", ThemeRounded>
+export declare type Shadow = Record<"shadow", ThemeShadow>
+export declare type Opacity = Record<"opacity", ThemeOpacity>
+export declare type Duration = Record<"duration", ThemeDuration>
 
 interface ThemeRounded extends Record<Size | "none" | "full", string> {}
 
@@ -122,6 +123,7 @@ interface Length extends Record<keysLength, string> {
 
 export type ThemeColor = { [key in keysColor]: string }
 type namesColors =
+  | "theme"
   | "emerald"
   | "green"
   | "lime"

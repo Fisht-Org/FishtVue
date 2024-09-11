@@ -86,7 +86,6 @@ declare class Component<T extends keyof ComponentsOptions> {
 }
 
 type ScopeId = string
-type Prefix = OptionsTheme["prefix"]
 
 export type PublicFields =
   | "name"
@@ -103,12 +102,5 @@ export type PublicFields =
   | "getPrefix"
   | "initStyle"
 
-export type StylesComponent = (
-  scopeId: ScopeId,
-  prefix: Prefix,
-  lightModeSelector: string,
-  darkModeSelector: string,
-  varsCss: string,
-  layers: string
-) => string
+export type StylesComponent = (layers: string, css: string, root: string) => string
 export default Component

@@ -3,12 +3,9 @@
   // import Button from "fishtvue/button"
   import { XMarkIcon } from "@heroicons/vue/20/solid"
   import type { FixWindowProps, FixWindowEmits, FixWindowExpose, FixWindowEvent } from "./FixWindow"
-  import { cn } from "fishtvue/utils/tailwindHandler"
-  import stylesComp from "./styles"
   import Component from "fishtvue/component"
   // ---BASE-COMPONENT----------------------
   const FixWindow = new Component<"FixWindow">()
-  FixWindow.initStyle(stylesComp)
   const options = FixWindow.getOptions()
   const prefix = FixWindow.getPrefix()
   // ---PROPS-EMITS-SLOTS-------------------
@@ -67,6 +64,26 @@
     }
     return ""
   })
+  const mode = computed<string>(() => {
+    const baseStyle =
+      "flex items-center px-1 border border-neutral-200 dark:border-neutral-900 text-black text-zinc-600 dark:text-zinc-400"
+    switch (props.mode) {
+      case "filled":
+        return `${baseStyle} bg-stone-100 dark:bg-stone-900 rounded-md`
+      case "outlined":
+        return `${baseStyle} bg-white dark:bg-neutral-950 rounded-md`
+      case "underlined":
+        return `${baseStyle} bg-stone-50 dark:bg-stone-950`
+      default:
+        return ""
+    }
+  })
+  FixWindow.setStyle(`transition-opacity ease-in-out duration-300 opacity-100 opacity-0`, true)
+  const classBody = computed(() => {
+    const classes = "fixed top-0 left-0 text-neutral-800 dark:text-neutral-300"
+    return FixWindow.setStyle([classes, options?.classBody ?? "", props.classBody], true)
+  })
+  const classBase = computed(() => FixWindow.setStyle([mode.value, options?.class ?? "", props.class]))
   // ---EXPOSE------------------------------
   defineExpose<FixWindowExpose>({
     // ---STATE-------------------------
@@ -88,6 +105,7 @@
   })
   // ---MOUNT-UNMOUNT-----------------------
   onMounted(() => {
+    FixWindow.initStyle()
     if (element.value) {
       updatePosition()
       addOpenListener()
@@ -280,21 +298,20 @@
       return setIsOpen()
     }
     if (timer.value === null) {
-      timer.value = 5
       timer.value = setInterval(() => {
         if (countTimer.value === delay.value) {
-          if (typeof timer.value === "number") clearInterval(timer.value)
+          if (timer.value !== null) clearInterval(timer.value)
           timer.value = null
           setIsOpen()
         } else {
           countTimer.value++
         }
-      }, 100) as unknown as number
+      }, 100)
     }
   }
 
   function close(event?: MouseEvent) {
-    if (typeof timer.value === "number") {
+    if (timer.value !== null) {
       clearInterval(timer.value)
       timer.value = null
     }
@@ -445,14 +462,21 @@
     }
   }
 </script>
+
 <template>
-  <transition>
+  <transition
+    leave-active-class="transition-opacity ease-in-out duration-300"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+    enter-active-class="transition-opacity ease-in-out duration-300"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100">
     <div
       v-show="isOpen"
       ref="fixWindow"
-      :class="cn(`${prefix}fix-window`, options?.classBody, props.classBody)"
+      :class="[`${prefix}fix-window`, classBody]"
       :style="`transform: translate(${x}, ${y});${border}`">
-      <div :class="cn(`${prefix}fix-window-body`, options?.class, props?.class)">
+      <div :class="classBase">
         <slot />
       </div>
       <Button v-if="isCloseButton" mode="ghost" class="absolute top-2 right-2 px-[5px] m-0.5 h-9 w-9" @click="close">

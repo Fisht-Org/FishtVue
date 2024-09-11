@@ -7,14 +7,19 @@ import {
   onBeforeUnmount as vueOnBeforeUnmount,
   onUnmounted as vueOnUnmounted
 } from "vue"
-import { useStyle, toVarsCss } from "fishtvue/theme"
+import { useStyle, tailwind } from "fishtvue/theme"
+import { cn } from "fishtvue/utils/tailwindHandler"
+import { toKebabCase } from "fishtvue/utils/stringHandler"
 import { fieldsPick } from "fishtvue/utils/objectHandler"
 import { minifyCSS } from "fishtvue/utils/domHandler"
 import type { ComponentInternalInstance } from "vue"
-import type { ThemeComponents } from "fishtvue/theme"
+import type { Theme, ThemeComponents } from "fishtvue/theme"
 import type { ComponentsOptions, FishtVue, OptionsTheme } from "fishtvue/config"
 import type { PublicFields, StylesComponent } from "./TypeComponent"
+import { UniqueKeySetCollection } from "fishtvue/utils/uniqueCollection"
 
+const listComponents = new Set<keyof ComponentsOptions | undefined>()
+const listOfStyledComponents = new UniqueKeySetCollection<keyof ComponentsOptions | undefined, string>()
 /**
  * ## Class: Component
  *
@@ -46,9 +51,13 @@ import type { PublicFields, StylesComponent } from "./TypeComponent"
 export default class Component<T extends keyof ComponentsOptions> {
   private readonly __instance: ComponentInternalInstance | null
   private readonly __globalConfig?: FishtVue
+  private readonly __globalTheme?: Theme
   private readonly __globalOptionsTheme?: OptionsTheme
   private readonly __options?: ComponentsOptions[T]
   private readonly __styles?: ThemeComponents[T]
+  private __stylesComp?: StylesComponent
+  private readonly __CSSBase: string[]
+  private __CSS: string[]
   private readonly __arrayPublicFields: Array<keyof this> = [
     "name",
     "scopeId",
@@ -65,17 +74,21 @@ export default class Component<T extends keyof ComponentsOptions> {
   constructor() {
     this.__instance = getCurrentInstance()
     this.__globalConfig = this.__instance?.appContext.config.globalProperties.$fishtVue
+    this.__globalTheme = this.__globalConfig?.config?.theme
     this.__globalOptionsTheme = this.__globalConfig?.config?.optionsTheme
     this.name = this.__instance?.type.__name as T
     this.scopeId = `data-fisht-${(this.__instance?.type as any).__hmrId}`
     this.prefix = this.__globalOptionsTheme?.prefix ? `${this.__globalOptionsTheme?.prefix}-` : ""
     this.__options = this.__globalConfig?.getOptions(this.name) as ComponentsOptions[T]
     this.__styles = this.__globalConfig?.getStyle(this.name) as ThemeComponents[T]
+    this.__stylesComp = undefined
+    this.__CSSBase = []
+    this.__CSS = []
     this.__lifeCycle()
   }
 
   private __lifeCycle() {
-    vueOnMounted(() => {
+    vueOnMounted(async () => {
       this.__setDataAttribute()
     })
   }
@@ -131,25 +144,52 @@ export default class Component<T extends keyof ComponentsOptions> {
   /**
    * `initStyle(stylesComp)`: A method that initializes the style for the component.
    */
-  public initStyle = (stylesComp: StylesComponent): void => {
-    if (!listOfStyledComponents.has(this.name)) this.__setStyle(stylesComp)
+  public initStyle = (stylesComp?: StylesComponent): void => {
+    this.__stylesComp = stylesComp ?? this.__stylesBase
+    if (!listComponents.has(this.name)) this.__setStyle(this.__stylesComp)
   }
+  public setStyle = <T extends string | string[]>(stylesComp: T | T[], isBaseClasses = false): string => {
+    const styles = cn(stylesComp)
+    const newClasses = styles.split(" ").filter((item) => !listOfStyledComponents.hasValue(this.name, item))
+    if (newClasses?.length) {
+      newClasses.forEach((item) => {
+        listOfStyledComponents.add(this.name, [item])
+        const css = tailwind(item, {
+          selector: `.${this.prefix}${toKebabCase(this.name)}[${this.scopeId}]${isBaseClasses ? "" : " "}`,
+          darkSelector: this.__globalOptionsTheme?.darkModeSelector ?? ""
+        })
+        if (css) this.__CSS.push(css)
+      })
+      if (this.__stylesComp) this.__setStyle(this.__stylesComp)
+    }
+    return styles
+  }
+  private __stylesBase: StylesComponent = (layers = "fishtvue", css = "", root = "") => `
+  @layer ${layers};
+  @layer fishtvue {
+    ${root}
+    ${css}
+  }
+`
+  private __root = () => `:root {
+  --theme: ${this.__globalTheme?.semantic?.customThemeColor};
+  --theme-contrast: ${this.__globalTheme?.semantic?.customThemeColorContrast};
+}`
 
   private __setStyle(stylesComp: StylesComponent): void {
-    const lightModeSelector = this.__globalOptionsTheme?.lightModeSelector
-      ? `.${this.__globalOptionsTheme?.lightModeSelector}`
-      : "@media (prefers-color-scheme: light)"
-    const darkModeSelector = this.__globalOptionsTheme?.darkModeSelector
-      ? `.${this.__globalOptionsTheme?.darkModeSelector}`
-      : "@media (prefers-color-scheme: dark)"
-    const varsCss = toVarsCss({ [this.name as string]: this.__styles } as any)
-    const layers = this.__globalOptionsTheme?.layers ?? "fishtvue"
     if (this.scopeId) {
-      const css = minifyCSS(stylesComp(this.scopeId, this.prefix, lightModeSelector, darkModeSelector, varsCss, layers))
+      this.__CSS = this.__CSS.sort((a, b) => {
+        const isMediaA = a.trim().includes("@media")
+        const isMediaB = b.trim().includes("@media")
+        if (isMediaA && !isMediaB) return 1
+        if (!isMediaA && isMediaB) return -1
+        return 0
+      })
+      const css = minifyCSS(
+        stylesComp(this.__globalOptionsTheme?.layers ?? "fishtvue", this.__CSS.join("\n"), this.__root())
+      )
       const style = useStyle(css, { name: this.name })
-      if (style.isLoaded) listOfStyledComponents.add(this.name)
+      if (style.isLoaded) listComponents.add(this.name)
     }
   }
 }
-
-const listOfStyledComponents = new Set<keyof ComponentsOptions | undefined>()

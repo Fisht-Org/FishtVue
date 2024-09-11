@@ -1,6 +1,19 @@
-import type { ThemePrimitive } from "fishtvue/theme/Theme"
+import { Colors, ThemePrimitive } from "fishtvue/theme/Theme"
 
-export const colors = {
+export const colors: Colors = {
+  theme: {
+    50: "hsl(calc(var(--theme)) var(--theme-contrast) 95.1% / <alpha-value>)",
+    100: "hsl(calc(var(--theme)) var(--theme-contrast) 93.1% / <alpha-value>)",
+    200: "hsl(calc(var(--theme)) var(--theme-contrast) 86% / <alpha-value>)",
+    300: "hsl(calc(var(--theme)) var(--theme-contrast) 74.4% / <alpha-value>)",
+    400: "hsl(calc(var(--theme)) var(--theme-contrast) 60.1% / <alpha-value>)",
+    500: "hsl(calc(var(--theme)) var(--theme-contrast) 46.9% / <alpha-value>)",
+    600: "hsl(calc(var(--theme)) var(--theme-contrast) 39.5% / <alpha-value>)",
+    700: "hsl(calc(var(--theme)) var(--theme-contrast) 30.5% / <alpha-value>)",
+    800: "hsl(calc(var(--theme)) var(--theme-contrast) 20.5% / <alpha-value>)",
+    900: "hsl(calc(var(--theme)) var(--theme-contrast) 9.2% / <alpha-value>)",
+    950: "hsl(calc(var(--theme)) var(--theme-contrast) 6% / <alpha-value>)"
+  },
   emerald: {
     50: "#ecfdf5",
     100: "#d1fae5",

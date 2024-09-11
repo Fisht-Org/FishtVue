@@ -102,16 +102,7 @@ describe("Testing class Component", () => {
     const mockStyle = vi.fn()
     component.initStyle(mockStyle)
     expect(mockStyle).toHaveBeenCalled()
-    expect(mockStyle).toHaveBeenCalledWith(
-      "data-fisht-01e97188",
-      "test-prefix-",
-      "@media (prefers-color-scheme: light)",
-      "@media (prefers-color-scheme: dark)",
-      `
-    --FixWindow-body-padding: {px.1};
-  `,
-      "fishtvue"
-    )
+    expect(mockStyle).toHaveBeenCalledWith("fishtvue", "")
   })
 
   it("should return the correct options with getOptions", () => {

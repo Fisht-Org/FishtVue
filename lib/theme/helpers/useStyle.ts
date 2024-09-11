@@ -1,5 +1,5 @@
 import { Style, StyleOptions } from "fishtvue/theme/Theme"
-import { getCurrentInstance, nextTick, onMounted, readonly, ref, watch } from "vue"
+import { nextTick, readonly, ref, watch } from "vue"
 import { isClient, isExist, setAttribute, setAttributes } from "fishtvue/utils/domHandler"
 
 let _id = 0
@@ -82,10 +82,9 @@ export default (css: string, options: StyleOptions = {}): Style => {
     if (styleRef.value) isExist(styleRef.value) && (document as Document).head.removeChild(styleRef.value)
     isLoaded.value = false
   }
-  async function tryOnMounted(fn: () => void, sync = true) {
-    if (getCurrentInstance()) onMounted(fn)
-    else if (sync) fn()
-    else nextTick(fn)
+  function tryOnMounted(fn: () => void, sync = true) {
+    if (sync) fn()
+    else nextTick(fn).then()
   }
   if (immediate && !manual) tryOnMounted(load)
   return {

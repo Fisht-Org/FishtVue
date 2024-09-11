@@ -144,6 +144,7 @@ describe("Testing string handler", () => {
 
     it("should convert PascalCase to kebab-case", () => {
       expect(toKebabCase("PascalCaseExample")).toBe("pascal-case-example")
+      expect(toKebabCase("Pascal")).toBe("pascal")
     })
 
     it("should convert string with spaces to kebab-case", () => {

@@ -45,8 +45,12 @@ type ModifierClass = {
   abstract: string
 }
 
-export function tailwind(classStyle: string): string | undefined {
+export function tailwind(classStyle: string, options: { selector: string; darkSelector: string }): string | undefined {
   if (typeof (classStyle as any) !== "string") return
+  options = {
+    selector: options?.selector ?? "",
+    darkSelector: options?.darkSelector ?? ""
+  }
   const className: string | undefined = classStyle
   let value: string | undefined = undefined
   const modifier: ModifierClass = {
@@ -76,7 +80,11 @@ export function tailwind(classStyle: string): string | undefined {
     if (mod.selectors) modifier.selectors = selectorsList[mod.selectors]
     if (mod.selectorsDynamic && mod.selectorsAbstract)
       modifier.selectors = selectorsDynamicList[mod.selectorsDynamic](mod.selectorsAbstract)
-    if (mod.media) modifier.media = mod.media.map((media) => `${mediaList[media]} {\n`)
+    if (mod.media)
+      modifier.media = mod.media.map((mediaItem) => {
+        if (mediaItem === "dark" && options.darkSelector?.length) return `${options.darkSelector} {\n`
+        else return `${mediaList[mediaItem]} {\n`
+      })
     if (mod.mediaDynamic && mod.mediaAbstract)
       modifier.media.push(`${mediaDynamicList[mod.mediaDynamic](mod.mediaAbstract)} {\n`)
     if (modifier.state) {
@@ -89,16 +97,20 @@ export function tailwind(classStyle: string): string | undefined {
     const styleName = classStyle.match(RegSingleStyles)?.groups?.style
     if (!(styleName && singleStylesNames.has(styleName))) return
     value = singleStyles[styleName]
-    return `${modifier.media.join("")}${modifier.state}.${setCustomModifier(isolation(className), modifier.abstract)}${modifier.pseudoClasses}${modifier.selectors} {\n${modifier.content}  ${
-      value
-    }\n}${"\n}".repeat(modifier.media.filter((i) => i).length)}`
+    return `${modifier.media.join("")}${options.selector}${
+      modifier.state
+    }.${setCustomModifier(isolation(className), modifier.abstract)}${
+      modifier.pseudoClasses
+    }${modifier.selectors} {\n${modifier.content}  ${value}\n}${"\n}".repeat(modifier.media.filter((i) => i).length)}`
   } else {
     const groups = classStyle.match(RegStyles)?.groups
     if (!(groups?.style && StylesNames.has(groups?.style))) return
     value = stylesRules[groups?.style].getValue(groups.className)
-    return `${modifier.media.join("")}${modifier.state}.${setCustomModifier(isolation(className), modifier.abstract)}${modifier.pseudoClasses}${modifier.selectors} {\n${modifier.content}  ${
-      value
-    }\n}${"\n}".repeat(modifier.media.filter((i) => i).length)}`
+    return `${modifier.media.join("")}${options.selector}${
+      modifier.state
+    }.${setCustomModifier(isolation(className), modifier.abstract)}${
+      modifier.pseudoClasses
+    }${modifier.selectors} {\n${modifier.content}  ${value}\n}${"\n}".repeat(modifier.media.filter((i) => i).length)}`
   }
 }
 
@@ -155,15 +167,15 @@ export function sizing(value: string): string {
 }
 
 export function addAlphaToHex(color: string, alpha?: number): string {
+  if (color.startsWith("hsl")) return color.replace("<alpha-value>", "100")
   if (typeof alpha !== "number") return color
   if (alpha === 1 || alpha === 100) return color
-  if (color[0] !== "#" || (color.length !== 7 && color.length !== 4)) return color
-
   let alphaValue
   if (alpha > 1) alphaValue = Math.round((alpha / 100) * 255)
   else alphaValue = Math.round(alpha * 255)
   const alphaHex = alphaValue.toString(16).padStart(2, "0")
-
+  if (color.startsWith("hsl")) return color.replace("<alpha-value>", alphaHex)
+  if (color[0] !== "#" || (color.length !== 7 && color.length !== 4)) return color
   return `${color}${alphaHex}`
 }
 
