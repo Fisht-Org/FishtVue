@@ -2,7 +2,7 @@ import { Plugin } from "vue"
 import { StyleMode } from "../types"
 
 import { Locale } from "fishtvue/locale/TypesLocale"
-import { Theme, ThemeComponents } from "fishtvue/theme"
+import { Theme } from "fishtvue/theme"
 
 import { FixWindowOption } from "fishtvue/fixwindow"
 import { NamesTheme } from "fishtvue/theme"
@@ -13,9 +13,6 @@ export declare type FishtVue = {
   getOptions<T extends keyof ComponentsOptions>(
     component?: T
   ): keyof ComponentsOptions extends T ? Readonly<ComponentsOptions> : Readonly<ComponentsOptions[T]>
-  getStyle<T extends keyof ThemeComponents>(
-    component?: T
-  ): keyof ThemeComponents extends T ? Readonly<Theme> | undefined : Readonly<ThemeComponents[T]> | undefined
 }
 
 export declare function useFishtVue<T extends FishtVue>(): Readonly<T> | undefined
@@ -23,10 +20,6 @@ export declare function useFishtVue<T extends FishtVue>(): Readonly<T> | undefin
 export declare function getOptions<T extends keyof ComponentsOptions>(
   component?: T
 ): keyof ComponentsOptions extends T ? Readonly<ComponentsOptions> : Readonly<ComponentsOptions[T]>
-
-export declare function getStyle<T extends keyof ThemeComponents>(
-  component?: T
-): keyof ThemeComponents extends T ? Readonly<Theme> | undefined : Readonly<ThemeComponents[T]> | undefined
 
 declare const plugin: Plugin
 export default plugin

@@ -1,15 +1,5 @@
 import { VNode } from "vue"
-import {
-  ClassComponent,
-  GlobalComponentConstructor,
-  StyleMode,
-  Position,
-  ReadRef,
-  RefLink,
-  StyleClass,
-  DeepPick
-} from "../types"
-import { ColorScheme } from "fishtvue/theme/Theme"
+import { ClassComponent, GlobalComponentConstructor, StyleMode, Position, ReadRef, RefLink, StyleClass } from "../types"
 // ---------------------------------------
 export type FixWindowEvent = "hover" | "click" | "mousedown" | "mouseup" | "dblclick" | "contextmenu" | "none"
 export declare type FixWindowProps = {
@@ -19,7 +9,6 @@ export declare type FixWindowProps = {
   position?: Position
   class?: StyleClass
   classBody?: StyleClass
-  styles?: FixWindowStyle
   mode?: StyleMode
   eventOpen?: FixWindowEvent
   eventClose?: FixWindowEvent
@@ -70,23 +59,6 @@ export declare type FixWindowOption = Pick<
   | "paddingWindow"
   | "byCursor"
   | "closeButton"
->
-type ClassesScheme = "body" | "root"
-// export declare type FixWindowStyle = DeepPartial<ColorScheme<ClassesScheme>>
-export declare type FixWindowStyle = DeepPick<
-  ColorScheme<ClassesScheme>,
-  | "root.duration"
-  | "body.padding"
-  | "body.rounded"
-  | "body.borderWidth"
-  | "light.root.color"
-  | "light.body.background"
-  | "light.body.color"
-  | "light.body.border"
-  | "dark.root.color"
-  | "dark.body.background"
-  | "dark.body.color"
-  | "dark.body.border"
 >
 
 // ---------------------------------------

@@ -1,5 +1,4 @@
 import type { ComponentsOptions, OptionsTheme } from "fishtvue/config"
-import type { ThemeComponents } from "fishtvue/theme"
 
 /**
  * ## Class: Component
@@ -25,7 +24,6 @@ import type { ThemeComponents } from "fishtvue/theme"
  * - `onBeforeUnmount(hook)`: A method that sets a hook to be executed before the component is unmounted.
  * - `onUnmounted(hook)`: A method that sets a hook to be executed after the component is unmounted.
  * - `getOptions()`: A method that returns the options for the component.
- * - `getStyles()`: A method that returns the styles for the component.
  * - `getPrefix()`: A method that returns the prefix for the component.
  * - `initStyle(stylesComp)`: A method that initializes the style for the component.
  */
@@ -70,11 +68,6 @@ declare class Component<T extends keyof ComponentsOptions> {
   getOptions(): ComponentsOptions[T] | undefined
 
   /**
-   * `getStyles()`: A method that returns the styles for the component.
-   */
-  getStyles(): ThemeComponents[T] | undefined
-
-  /**
    * `getPrefix()`: A method that returns the prefix for the component.
    */
   getPrefix(): OptionsTheme["prefix"]
@@ -98,7 +91,6 @@ export type PublicFields =
   | "onBeforeUnmount"
   | "onUnmounted"
   | "getOptions"
-  | "getStyles"
   | "getPrefix"
   | "initStyle"
 

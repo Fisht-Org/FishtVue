@@ -6,7 +6,7 @@ import Aurora from "fishtvue/theme/themes/Aurora"
 import Harmony from "fishtvue/theme/themes/Harmony"
 import Sapphire from "fishtvue/theme/themes/Sapphire"
 import type { ObjectPlugin } from "vue"
-import type { Theme, ThemeComponents } from "fishtvue/theme"
+import type { Theme } from "fishtvue/theme"
 import type { ComponentsOptions, FishtVue, FishtVueConfiguration } from "fishtvue/config/FishtVue"
 
 let FishtVueSymbol = Symbol()
@@ -27,20 +27,6 @@ export function getOptions<T extends keyof ComponentsOptions>(component?: T) {
       deepFreeze(options)
       if (component && options?.[component]) return options[component]
       return options
-    }
-  })
-}
-
-export function getStyle<T extends keyof ThemeComponents>(component?: T) {
-  return isExistFishtVue((FishtVue) => {
-    let styles = FishtVue?.config?.theme
-    if (styles) {
-      styles = deepCopyObject(styles)
-      deepFreeze(styles)
-      if (component && styles.components?.[component]) {
-        return styles?.components?.[component]
-      }
-      return styles
     }
   })
 }
@@ -88,8 +74,7 @@ export default {
     const FishtVue: FishtVue = {
       config: reactive(options ? deepMerge(defaultOptions, options) : defaultOptions),
       useFishtVue: useFishtVue as FishtVue["useFishtVue"],
-      getOptions: getOptions as FishtVue["getOptions"],
-      getStyle: getStyle as FishtVue["getStyle"]
+      getOptions: getOptions as FishtVue["getOptions"]
     }
     FishtVue.config.theme = linksTheme(FishtVue.config.theme)
     FishtVueSymbol = Symbol("FishtVue")

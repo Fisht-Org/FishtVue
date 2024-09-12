@@ -19,15 +19,6 @@ describe("Testing class Component", () => {
     },
     componentsOptions: {
       FixWindow: { closeButton: true }
-    },
-    theme: {
-      components: {
-        FixWindow: {
-          body: {
-            padding: "{px.1}"
-          }
-        }
-      }
     }
   }
   beforeEach(() => {
@@ -60,23 +51,9 @@ describe("Testing class Component", () => {
                     },
                     componentsOptions: {
                       FixWindow: { closeButton: true }
-                    },
-                    theme: {
-                      components: {
-                        FixWindow: {
-                          body: {
-                            padding: "{px.1}"
-                          }
-                        }
-                      }
                     }
                   },
-                  getOptions: vi.fn(() => ({ closeButton: true })),
-                  getStyle: vi.fn(() => ({
-                    body: {
-                      padding: "{px.1}"
-                    }
-                  }))
+                  getOptions: vi.fn(() => ({ closeButton: true }))
                 }
               }
             }
@@ -102,15 +79,11 @@ describe("Testing class Component", () => {
     const mockStyle = vi.fn()
     component.initStyle(mockStyle)
     expect(mockStyle).toHaveBeenCalled()
-    expect(mockStyle).toHaveBeenCalledWith("fishtvue", "")
+    expect(mockStyle).toHaveBeenCalledWith("fishtvue", "", ":root {\n  --theme: 0;\n  --theme-contrast: 0;\n}")
   })
 
   it("should return the correct options with getOptions", () => {
     expect(component.getOptions()).toEqual({ closeButton: true })
-  })
-
-  it("should return the correct options with getStyles", () => {
-    expect(component.getStyles()).toEqual({ body: { padding: "{px.1}" } })
   })
 
   it("should return the correct prefix with getPrefix", () => {

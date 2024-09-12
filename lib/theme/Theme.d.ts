@@ -1,6 +1,5 @@
 import type { Ref } from "vue"
 import { DeepPartial, Size } from "../types"
-import { FixWindowStyle } from "fishtvue/fixwindow"
 
 export enum NamesTheme {
   Aurora, // (заря)
@@ -20,7 +19,6 @@ declare type Theme = DeepPartial<{
   name: keyof typeof NamesTheme
   primitive: ThemePrimitive
   semantic: ThemeSemantic
-  components: ThemeComponents
 }>
 
 // ----------------------
@@ -43,10 +41,6 @@ type ThemeSemantic = {
   primary: ThemeColor
   customThemeColor: number
   customThemeColorContrast: number
-}
-declare type ThemeComponents = {
-  FixWindow: FixWindowStyle
-  test: string
 }
 // ----------------------
 type ColorParameters = {

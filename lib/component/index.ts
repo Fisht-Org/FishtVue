@@ -13,7 +13,7 @@ import { toKebabCase } from "fishtvue/utils/stringHandler"
 import { fieldsPick } from "fishtvue/utils/objectHandler"
 import { minifyCSS } from "fishtvue/utils/domHandler"
 import type { ComponentInternalInstance } from "vue"
-import type { Theme, ThemeComponents } from "fishtvue/theme"
+import type { Theme } from "fishtvue/theme"
 import type { ComponentsOptions, FishtVue, OptionsTheme } from "fishtvue/config"
 import type { PublicFields, StylesComponent } from "./TypeComponent"
 import { UniqueKeySetCollection } from "fishtvue/utils/uniqueCollection"
@@ -44,7 +44,6 @@ const listOfStyledComponents = new UniqueKeySetCollection<keyof ComponentsOption
  * - `onBeforeUnmount(hook)`: A method that sets a hook to be executed before the component is unmounted.
  * - `onUnmounted(hook)`: A method that sets a hook to be executed after the component is unmounted.
  * - `getOptions()`: A method that returns the options for the component.
- * - `getStyles()`: A method that returns the styles for the component.
  * - `getPrefix()`: A method that returns the prefix for the component.
  * - `initStyle(stylesComp)`: A method that initializes the style for the component.
  */
@@ -54,16 +53,13 @@ export default class Component<T extends keyof ComponentsOptions> {
   private readonly __globalTheme?: Theme
   private readonly __globalOptionsTheme?: OptionsTheme
   private readonly __options?: ComponentsOptions[T]
-  private readonly __styles?: ThemeComponents[T]
   private __stylesComp?: StylesComponent
-  private readonly __CSSBase: string[]
   private __CSS: string[]
   private readonly __arrayPublicFields: Array<keyof this> = [
     "name",
     "scopeId",
     "prefix",
     "getOptions",
-    "getStyles",
     "getPrefix",
     "initStyle"
   ]
@@ -80,9 +76,7 @@ export default class Component<T extends keyof ComponentsOptions> {
     this.scopeId = `data-fisht-${(this.__instance?.type as any).__hmrId}`
     this.prefix = this.__globalOptionsTheme?.prefix ? `${this.__globalOptionsTheme?.prefix}-` : ""
     this.__options = this.__globalConfig?.getOptions(this.name) as ComponentsOptions[T]
-    this.__styles = this.__globalConfig?.getStyle(this.name) as ThemeComponents[T]
     this.__stylesComp = undefined
-    this.__CSSBase = []
     this.__CSS = []
     this.__lifeCycle()
   }
@@ -129,10 +123,6 @@ export default class Component<T extends keyof ComponentsOptions> {
    */
   public getOptions = (): ComponentsOptions[T] | undefined => this.__options
   /**
-   * `getStyles()`: A method that returns the styles for the component.
-   */
-  public getStyles = (): ThemeComponents[T] | undefined => this.__styles
-  /**
    * `getPrefix()`: A method that returns the prefix for the component.
    */
   public getPrefix = (): OptionsTheme["prefix"] => this.prefix
@@ -172,8 +162,8 @@ export default class Component<T extends keyof ComponentsOptions> {
   }
 `
   private __root = () => `:root {
-  --theme: ${this.__globalTheme?.semantic?.customThemeColor};
-  --theme-contrast: ${this.__globalTheme?.semantic?.customThemeColorContrast};
+  --theme: ${this.__globalTheme?.semantic?.customThemeColor ?? 0};
+  --theme-contrast: ${this.__globalTheme?.semantic?.customThemeColorContrast ?? 0};
 }`
 
   private __setStyle(stylesComp: StylesComponent): void {
