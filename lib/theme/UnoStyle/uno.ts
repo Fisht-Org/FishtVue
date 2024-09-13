@@ -82,7 +82,7 @@ export function tailwind(classStyle: string, options: { selector: string; darkSe
       modifier.selectors = selectorsDynamicList[mod.selectorsDynamic](mod.selectorsAbstract)
     if (mod.media)
       modifier.media = mod.media.map((mediaItem) => {
-        if (mediaItem === "dark" && options.darkSelector?.length) return `${options.darkSelector} {\n`
+        if (mediaItem === "dark" && options.darkSelector?.length) return options.darkSelector
         else return `${mediaList[mediaItem]} {\n`
       })
     if (mod.mediaDynamic && mod.mediaAbstract)
@@ -101,7 +101,9 @@ export function tailwind(classStyle: string, options: { selector: string; darkSe
       modifier.state
     }.${setCustomModifier(isolation(className), modifier.abstract)}${
       modifier.pseudoClasses
-    }${modifier.selectors} {\n${modifier.content}  ${value}\n}${"\n}".repeat(modifier.media.filter((i) => i).length)}`
+    }${modifier.selectors} {\n${modifier.content}  ${value}\n}${"\n}".repeat(
+      modifier.media.filter((i) => i.endsWith("{\n")).length
+    )}`
   } else {
     const groups = classStyle.match(RegStyles)?.groups
     if (!(groups?.style && StylesNames.has(groups?.style))) return
@@ -110,7 +112,9 @@ export function tailwind(classStyle: string, options: { selector: string; darkSe
       modifier.state
     }.${setCustomModifier(isolation(className), modifier.abstract)}${
       modifier.pseudoClasses
-    }${modifier.selectors} {\n${modifier.content}  ${value}\n}${"\n}".repeat(modifier.media.filter((i) => i).length)}`
+    }${modifier.selectors} {\n${modifier.content}  ${value}\n}${"\n}".repeat(
+      modifier.media.filter((i) => i.endsWith("{\n")).length
+    )}`
   }
 }
 

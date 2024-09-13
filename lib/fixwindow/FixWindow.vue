@@ -79,11 +79,11 @@
     }
   })
   FixWindow.setStyle(`transition-opacity ease-in-out duration-300 opacity-100 opacity-0`, true)
-  const classBody = computed(() => {
+  const classBase = computed(() => {
     const classes = "fixed top-0 left-0 text-neutral-800 dark:text-neutral-300"
     return FixWindow.setStyle([classes, options?.classBody ?? "", props.classBody], true)
   })
-  const classBase = computed(() => FixWindow.setStyle([mode.value, options?.class ?? "", props.class]))
+  const classBody = computed(() => FixWindow.setStyle([mode.value, options?.class ?? "", props.class]))
   // ---EXPOSE------------------------------
   defineExpose<FixWindowExpose>({
     // ---STATE-------------------------
@@ -474,9 +474,9 @@
     <div
       v-show="isOpen"
       ref="fixWindow"
-      :class="[`${prefix}fix-window`, classBody]"
+      :class="[`${prefix}fix-window`, classBase]"
       :style="`transform: translate(${x}, ${y});${border}`">
-      <div :class="classBase">
+      <div :class="classBody">
         <slot />
       </div>
       <Button v-if="isCloseButton" mode="ghost" class="absolute top-2 right-2 px-[5px] m-0.5 h-9 w-9" @click="close">
