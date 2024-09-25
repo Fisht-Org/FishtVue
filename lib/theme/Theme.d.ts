@@ -39,8 +39,8 @@ export type RGB = Record<"r" | "g" | "b", number>
 type ThemePrimitive = Margin & Padding & Colors & ColorsConst & Border & Rounded & Shadow & Opacity & Duration
 type ThemeSemantic = {
   primary: ThemeColor
-  customThemeColor: number
-  customThemeColorContrast: number
+  customThemeColor: number | string
+  customThemeColorContrast: number | string
 }
 // ----------------------
 type ColorParameters = {

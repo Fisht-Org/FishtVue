@@ -198,7 +198,7 @@ export function get<T>(obj: T, path: number | string | string[], separator = "."
     // @ts-ignore
     return obj[path]
   }
-  if (path.length === 0) {
+  if (!path || path.length === 0) {
     return undefined
   }
   return path.reduce((acc, key) => {
