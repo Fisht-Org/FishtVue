@@ -2,7 +2,7 @@ import { linksTheme } from "./helpers/themeHandler"
 import toVarsCss from "./helpers/toVarsCss"
 import palette from "./helpers/palette"
 import useStyle from "./helpers/useStyle"
-import { tailwind } from "./UnoStyle/uno"
+import { tailwind } from "fishtvue/theme/uno"
 import type { NamesTheme as Themes } from "./Theme"
 
 const NamesTheme: (keyof typeof Themes)[] = [

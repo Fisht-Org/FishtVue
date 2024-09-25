@@ -305,38 +305,6 @@ describe("Testing theme", () => {
           "900": "hsl({customThemeColor} {customThemeColorContrast}% 9.2%)",
           "950": "hsl({customThemeColor} {customThemeColorContrast}% 6%)"
         }
-      },
-      components: {
-        FixWindow: {
-          root: {
-            duration: "{duration.300}"
-          },
-          body: {
-            padding: "{px.1}",
-            rounded: "{rounded.sm}",
-            borderWidth: "{borderWidth.1}"
-          },
-          light: {
-            root: {
-              color: "{neutral.800}"
-            },
-            body: {
-              background: "{stone.100}",
-              color: "{zinc.600}",
-              border: "{neutral.200}"
-            }
-          },
-          dark: {
-            root: {
-              color: "{neutral.300}"
-            },
-            body: {
-              background: "{stone.900}",
-              color: "{zinc.400}",
-              border: "{neutral.900}"
-            }
-          }
-        }
       }
     }
 
@@ -386,38 +354,6 @@ describe("Testing theme", () => {
           "800": "hsl(850 60% 20.5%)",
           "900": "hsl(850 60% 9.2%)",
           "950": "hsl(850 60% 6%)"
-        }
-      },
-      components: {
-        FixWindow: {
-          root: {
-            duration: "300ms"
-          },
-          body: {
-            padding: "0 4px 0 4px",
-            rounded: "4px",
-            borderWidth: "1px"
-          },
-          light: {
-            root: {
-              color: "#262626"
-            },
-            body: {
-              background: "#f5f5f4",
-              color: "#52525b",
-              border: "#e5e5e5"
-            }
-          },
-          dark: {
-            root: {
-              color: "#d4d4d4"
-            },
-            body: {
-              background: "#1c1917",
-              color: "#a1a1aa",
-              border: "#171717"
-            }
-          }
         }
       }
     }

@@ -1,6 +1,7 @@
 import { inject, reactive } from "vue"
 import { NamesTheme, linksTheme } from "fishtvue/theme"
 import { deepMerge, deepFreeze, deepCopyObject } from "fishtvue/utils/objectHandler"
+import Component from "fishtvue/component"
 import Locales from "fishtvue/locale/locale"
 import Aurora from "fishtvue/theme/themes/Aurora"
 import Harmony from "fishtvue/theme/themes/Harmony"
@@ -8,6 +9,7 @@ import Sapphire from "fishtvue/theme/themes/Sapphire"
 import type { ObjectPlugin } from "vue"
 import type { Theme } from "fishtvue/theme"
 import type { ComponentsOptions, FishtVue, FishtVueConfiguration } from "fishtvue/config/FishtVue"
+import baseStyle from "./baseStyle"
 
 let FishtVueSymbol = Symbol()
 
@@ -82,5 +84,12 @@ export default {
     window.FishtVue = FishtVue
     app.provide(FishtVueSymbol, FishtVue)
     app.config.globalProperties.$fishtVue = FishtVue
+    const BaseStylesComponent = new Component("BaseComponent" as any)
+    BaseStylesComponent.initStyle(
+      () => `@layer fishtvue {:root {
+  --theme: ${FishtVue.config.theme?.semantic?.customThemeColor ?? 0};
+  --theme-contrast: ${FishtVue.config.theme?.semantic?.customThemeColorContrast ?? 0};
+}\n${baseStyle}}`
+    )
   }
 } as ObjectPlugin

@@ -46,23 +46,52 @@ const BABEL_PLUGIN_OPTIONS = {
   babelHelpers: "runtime",
   babelrc: false
 }
-const EXTERNAL = ["vue", "@heroicons/vue/20/solid", "tailwind-merge", "clsx"]
+const EXTERNAL = [
+  "vue",
+  "@heroicons/vue/20/solid",
+  "@heroicons/vue/24/outline",
+  "@iconify/vue",
+  "epic-spinners",
+  "tailwind-merge",
+  "clsx"
+]
+const EXTERNAL_CORE_DEPENDENCIES = {
+  "button/Button": "button",
+  "icons/Icons": "icons",
+  "loading/Loading": "loading",
+  "fixwindow/FixWindow": "fixwindow"
+}
+
 // =====================================================================================================================
+function replaceComponentImportPaths() {
+  return {
+    name: "replace-component-import-paths",
+    transform(code, id) {
+      if (id.endsWith(".vue")) {
+        const reg = new RegExp(`"${PROJECT_NAME}\\/(${Object.keys(EXTERNAL_CORE_DEPENDENCIES).join("|")})\\.vue"`, "gm")
+        const modifiedCode = code.replace(reg, (match, component) =>
+          component ? `"${PROJECT_NAME}/${EXTERNAL_CORE_DEPENDENCIES[component]}"` : match
+        )
+        return { code: modifiedCode, map: null }
+      }
+      return null
+    }
+  }
+}
+
 const GLOBAL_DEPENDENCIES = {
   "tailwind-merge": "tailwindMerge",
   clsx: "clsx",
   vue: "Vue"
 }
 const CORE_DEPENDENCIES = JSON.parse(`{
-  "@heroicons/vue/20/solid": "Icon",
-  "tailwind-merge": "tailwindMerge",
-  "clsx": "clsx",
   "${PROJECT_NAME}/config": "${PROJECT_NAME}.config",
   "${PROJECT_NAME}/component": "${PROJECT_NAME}.component",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
   "${PROJECT_NAME}/button": "${PROJECT_NAME}.button",
-  "${PROJECT_NAME}/alert": "${PROJECT_NAME}.alert",
-  "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
+  "${PROJECT_NAME}/icons": "${PROJECT_NAME}.icons",
+  "${PROJECT_NAME}/loading": "${PROJECT_NAME}.loading",
+  "${PROJECT_NAME}/fixwindow": "${PROJECT_NAME}.fixwindow",
   "${PROJECT_NAME}/utils/domHandler": "${PROJECT_NAME}.utils.domHandler",
   "${PROJECT_NAME}/utils/dateHandler": "${PROJECT_NAME}.utils.dateHandler",
   "${PROJECT_NAME}/utils/arrayHandler": "${PROJECT_NAME}.utils.arrayHandler",
@@ -70,10 +99,14 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/utils/objectHandler": "${PROJECT_NAME}.utils.objectHandler",
   "${PROJECT_NAME}/utils/functionHandler": "${PROJECT_NAME}.utils.functionHandler",
   "${PROJECT_NAME}/utils/tailwindHandler": "${PROJECT_NAME}.utils.tailwindHandler",
+  "${PROJECT_NAME}/utils/uniqueCollection": "${PROJECT_NAME}.utils.uniqueCollection",
   "${PROJECT_NAME}/utils": "${PROJECT_NAME}.utils",
   "${PROJECT_NAME}/locale/locale": "${PROJECT_NAME}.locale.locale",
   "${PROJECT_NAME}/theme": "${PROJECT_NAME}.theme",
   "${PROJECT_NAME}/theme/themes/Aurora": "${PROJECT_NAME}.theme.themes.Aurora",
+  "${PROJECT_NAME}/theme/themes/Harmony": "${PROJECT_NAME}.theme.themes.Harmony",
+  "${PROJECT_NAME}/theme/themes/Sapphire": "${PROJECT_NAME}.theme.themes.Sapphire",
+  "${PROJECT_NAME}/theme/uno": "${PROJECT_NAME}.theme.uno",
   "${PROJECT_NAME}/theme/primitive": "${PROJECT_NAME}.theme.primitive",
   "${PROJECT_NAME}/theme/semantic": "${PROJECT_NAME}.theme.semantic"
 }`)
@@ -84,6 +117,7 @@ const GLOBAL_COMPONENT_DEPENDENCIES = {
 }
 // =====================================================================================================================
 const PLUGINS = [
+  replaceComponentImportPaths(),
   vue(),
   typescript({ tsconfigOverride: { compilerOptions: { noImplicitAny: false } } }),
   postcss(POSTCSS_PLUGIN_OPTIONS),
@@ -222,6 +256,7 @@ function addUtils() {
     "dateHandler",
     "functionHandler",
     "tailwindHandler",
+    "uniqueCollection",
     "domHandler"
   ]
   utilsHandlers.forEach((name) => addEntry("utils", `${name}.ts`, `${name}`))
@@ -235,9 +270,10 @@ function addBaseComponent() {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addTheme() {
   addEntry("theme", "index.ts", "theme")
+  addEntry("theme", "uno.ts", "uno")
   addEntry("theme", "semantic.ts", "semantic")
   addEntry("theme", "primitive.ts", "primitive")
-  const themes = ["Aurora"]
+  const themes = ["Aurora", "Harmony", "Sapphire"]
   themes.forEach((name) => addEntry("theme/themes", `${name}.ts`, `${name}`))
 }
 

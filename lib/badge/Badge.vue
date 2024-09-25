@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { computed, onMounted } from "vue"
-  // import Button from "fishtvue/button"
-  import { XMarkIcon } from "@heroicons/vue/20/solid"
   import type { BadgeProps, BadgeEmits, BadgeExpose } from "./Badge"
   import Component from "fishtvue/component"
+  import Button from "fishtvue/button/Button.vue"
+  import { XMarkIcon } from "@heroicons/vue/20/solid"
   // ---BASE-COMPONENT----------------------
   const Badge = new Component<"Badge">()
   const options = Badge.getOptions()
@@ -28,12 +28,12 @@
               : "ring-1 ring-inset text-neutral-600 dark:text-neutral-200 ring-neutral-500/30"
             : ""
   )
-  const classBadgeContent = computed(() => {
-    const arrayClasses = []
+  const classBadgeContent = computed<BadgeProps["classContent"]>(() => {
+    const arrayClasses: string[] = []
     !(mode.value === "primary") || arrayClasses.push("fill-theme-100 dark:fill-theme-300")
     !(mode.value === "secondary") || arrayClasses.push("fill-theme-600 dark:fill-theme-300")
     !(mode.value === "outline") || arrayClasses.push("fill-theme-500 dark:fill-theme-600")
-    !(mode.value === "neutral") || arrayClasses.push(props.classContent ?? options?.classContent)
+    !(mode.value === "neutral") || arrayClasses.push((props.classContent ?? options?.classContent) as string)
     return arrayClasses
   })
   const classBase = computed(() =>
@@ -56,8 +56,8 @@
       true
     )
   )
-  const classIcon = computed(() => Badge.setStyle(["h-1.5 w-1.5 mx-1", classBadgeContent.value]))
-  const classButtonIcon = computed(() => Badge.setStyle(["h-4 w-4", classBadgeContent.value]))
+  const classIcon = computed(() => Badge.setStyle(["h-1.5 w-1.5 mx-1", classBadgeContent.value as string[]]))
+  const classButtonIcon = computed(() => Badge.setStyle(["h-4 w-4", classBadgeContent.value as string[]]))
   // ---EXPOSE------------------------------
   defineExpose<BadgeExpose>({
     // ---PROPS-------------------------

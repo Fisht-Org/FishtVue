@@ -7,6 +7,9 @@ import { Theme } from "fishtvue/theme"
 import { NamesTheme } from "fishtvue/theme"
 import { FixWindowOption } from "fishtvue/fixwindow"
 import { BadgeOption } from "fishtvue/badge"
+import { ButtonOption } from "fishtvue/button"
+import { IconsOption } from "fishtvue/icons"
+import { LoadingOption } from "fishtvue/loading"
 
 export declare type FishtVue = {
   config: FishtVueConfiguration
@@ -87,6 +90,9 @@ export type OptionsTheme = Partial<{
 }>
 
 export type ComponentsOptions = Partial<{
+  Button: ButtonOption
+  Icons: IconsOption
+  Loading: LoadingOption
   FixWindow: FixWindowOption
   Badge: BadgeOption
 }>

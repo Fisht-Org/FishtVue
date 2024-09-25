@@ -1,6 +1,5 @@
-import { ClassComponent, DeepPick, GlobalComponentConstructor, ReadRef, StyleClass } from "../types"
+import { ClassComponent, GlobalComponentConstructor, ReadRef, StyleClass } from "../types"
 import { VNode } from "vue"
-import { ColorScheme } from "fishtvue/theme"
 // ---------------------------------------
 export declare type BadgeProps = {
   mode?: "primary" | "secondary" | "outline" | "neutral"
@@ -24,10 +23,6 @@ export declare type BadgeExpose = {
   deleteBadge(): void
 }
 export declare type BadgeOption = Pick<BadgeProps, "mode" | "class" | "classContent" | "point" | "closeButton">
-
-type ClassesScheme = "body" | "root"
-
-export declare type BadgeStyle = DeepPick<ColorScheme<ClassesScheme>, "">
 
 // ---------------------------------------
 declare class Badge extends ClassComponent<BadgeProps, BadgeSlots, BadgeEmits, BadgeExpose> {}

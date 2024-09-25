@@ -79,7 +79,7 @@ describe("Testing class Component", () => {
     const mockStyle = vi.fn()
     component.initStyle(mockStyle)
     expect(mockStyle).toHaveBeenCalled()
-    expect(mockStyle).toHaveBeenCalledWith("fishtvue", "", ":root {\n  --theme: 0;\n  --theme-contrast: 0;\n}")
+    expect(mockStyle).toHaveBeenCalledWith("fishtvue", "")
   })
 
   it("should return the correct options with getOptions", () => {

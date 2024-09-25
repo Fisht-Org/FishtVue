@@ -184,6 +184,24 @@ export function toCapitalCase(str: string): string {
   return isString(str, false) ? str[0].toUpperCase() + str.slice(1) : str
 }
 
+export function convertToCamelCase(text: string): string {
+  return text.replace(/^(\w)|[-|_](\w)/g, function (_, groupOne, groupTwo) {
+    return groupOne ? groupOne.toUpperCase() : groupTwo ? groupTwo.toUpperCase() : ""
+  })
+}
+
+export function convertToDashCase(text: string): string {
+  return text.replace(/([A-Z\W_])/g, function (_, letter, item) {
+    return letter !== letter.toLowerCase() ? (item > 0 ? "-" : "") + letter.toLowerCase() : "-"
+  })
+}
+
+export function convertToSnakeCase(text: string): string {
+  return text.replace(/([A-Z\W])/g, function (_, letter, item) {
+    return letter !== letter.toLowerCase() ? (item > 0 ? "_" : "") + letter.toLowerCase() : "_"
+  })
+}
+
 /**
  #### `stringify` Function Documentation
 
@@ -213,13 +231,13 @@ export function toCapitalCase(str: string): string {
 
  ```typescript
  const obj = {
-   name: "John",
-   age: 30,
-   hobbies: ["reading", "coding"],
-   address: {
-     street: "123 Main St",
-     city: "New York"
-   }
+ name: "John",
+ age: 30,
+ hobbies: ["reading", "coding"],
+ address: {
+ street: "123 Main St",
+ city: "New York"
+ }
  }
 
  console.log(stringify(obj));

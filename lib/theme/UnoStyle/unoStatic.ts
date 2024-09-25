@@ -1,4 +1,4 @@
-import { PseudoClasses } from "fishtvue/theme/UnoStyle/UnoTypes"
+import { PseudoClasses } from "fishtvue/theme/unoStyle/UnoTypes"
 
 export const baseFilter = `filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);`
 export const baseBackdropFilter = `-webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);\n  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);`
@@ -556,4 +556,11 @@ export const selectors: Record<string, string> = {
 export const selectorsDynamic: Record<string, (value: string) => string> = {
   aria: (value) => `[aria-${value.replace(/=([\w.-]+)/, '="$1"')}]`,
   data: (value) => `[data-${value.replace(/=([\w.-]+)/, '="$1"')}]`
+}
+export const animations: Record<string, string> = {
+  none: "none",
+  spin: "spin 1s linear infinite",
+  ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
+  pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+  bounce: "bounce 1s infinite"
 }

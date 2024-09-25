@@ -94,5 +94,5 @@ export type PublicFields =
   | "getPrefix"
   | "initStyle"
 
-export type StylesComponent = (layers: string, css: string, root: string) => string
+export type StylesComponent = (layers: string, css: string) => string
 export default Component

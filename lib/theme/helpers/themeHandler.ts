@@ -1,7 +1,7 @@
 import { deepCopy } from "fishtvue/utils/objectHandler"
 import type { Theme } from "fishtvue/theme"
 
-const fieldNameTheme: Array<keyof Theme> = ["primitive", "semantic", "components"]
+const fieldNameTheme: Array<keyof Theme> = ["primitive", "semantic"]
 const mask = new RegExp("{([^}]*)}", "g")
 const replacer = (match: string, route: string, theme: Theme): string => {
   const keys = route.split(".")
@@ -37,6 +37,5 @@ export function linksTheme<T extends Theme>(theme: Theme | undefined): T | undef
   const copyTheme = deepCopy(theme) as T
   copyTheme.primitive = setLinksTheme<Theme["primitive"]>(copyTheme.primitive, copyTheme)
   copyTheme.semantic = setLinksTheme<Theme["semantic"]>(copyTheme.semantic, copyTheme)
-  copyTheme.components = setLinksTheme<Theme["components"]>(copyTheme.components, copyTheme)
   return copyTheme
 }

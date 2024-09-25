@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { tailwind } from "fishtvue/theme"
-import { baseBackdropFilter, baseFilter, baseTransform, baseTransition } from "fishtvue/theme/UnoStyle/unoStatic"
+import { baseBackdropFilter, baseFilter, baseTransform, baseTransition } from "fishtvue/theme/unoStyle/unoStatic"
 
 describe("unoStyle", () => {
   describe("Handling Hover, Focus, and Other States", () => {
@@ -1171,7 +1171,12 @@ describe("unoStyle", () => {
         { classValue: "m-1.5", expected: ".m-1\\.5 {\n  margin: 0.375rem;\n}" },
         { classValue: "m-32", expected: ".m-32 {\n  margin: 8rem;\n}" },
         { classValue: "mx-32", expected: ".mx-32 {\n  margin-left: 8rem;\n  margin-right: 8rem;\n}" },
-        { classValue: "mx-[32rem]", expected: ".mx-\\[32rem\\] {\n  margin-left: 32rem;\n  margin-right: 32rem;\n}" }
+        { classValue: "mx-[32rem]", expected: ".mx-\\[32rem\\] {\n  margin-left: 32rem;\n  margin-right: 32rem;\n}" },
+        { classValue: "-m-px", expected: ".-m-px {\n  margin: -1px;\n}" },
+        {
+          classValue: "-mx-[32rem]",
+          expected: ".-mx-\\[32rem\\] {\n  margin-left: -32rem;\n  margin-right: -32rem;\n}"
+        }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -2395,6 +2400,7 @@ describe("unoStyle", () => {
     describe("Border Width", () => {
       it.each<{ classValue: string; expected: string }>([
         { classValue: "border-0", expected: ".border-0 {\n  border-width: 0px;\n}" },
+        { classValue: "border", expected: ".border {\n  border-width: 1px;\n}" },
         { classValue: "border-2", expected: ".border-2 {\n  border-width: 2px;\n}" },
         {
           classValue: "border-x-4",
@@ -3534,7 +3540,27 @@ describe("unoStyle", () => {
         expect(tailwind(classValue)).toBe(expected)
       })
     })
-    describe.todo("Animation", () => {})
+    describe("Animation", () => {
+      it.each<{ classValue: string; expected: string }>([
+        { classValue: "animate-none", expected: ".animate-none {\n  animation: none;\n}" },
+        { classValue: "animate-spin", expected: ".animate-spin {\n  animation: spin 1s linear infinite;\n}" },
+        {
+          classValue: "animate-ping",
+          expected: ".animate-ping {\n  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;\n}"
+        },
+        {
+          classValue: "animate-pulse",
+          expected: ".animate-pulse {\n  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;\n}"
+        },
+        { classValue: "animate-bounce", expected: ".animate-bounce {\n  animation: bounce 1s infinite;\n}" },
+        {
+          classValue: "animate-[wiggle_1s_ease-in-out_infinite]",
+          expected: ".animate-\\[wiggle_1s_ease-in-out_infinite\\] {\n  animation: wiggle 1s ease-in-out infinite;\n}"
+        }
+      ])(`tailwind($classValue)`, ({ classValue, expected }) => {
+        expect(tailwind(classValue)).toBe(expected)
+      })
+    })
   })
   describe("Transforms", () => {
     describe("Scale", () => {

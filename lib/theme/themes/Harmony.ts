@@ -5,6 +5,5 @@ import defaultSemantic from "fishtvue/theme/semantic"
 export default <FishtVueConfiguration["theme"]>{
   name: "Harmony",
   primitive: defaultPrimitive,
-  semantic: defaultSemantic,
-  components: {}
+  semantic: defaultSemantic
 }

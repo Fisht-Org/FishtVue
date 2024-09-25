@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { computed, getCurrentInstance, ref, watch, onMounted, onUnmounted } from "vue"
-  // import Button from "fishtvue/button"
   import { XMarkIcon } from "@heroicons/vue/20/solid"
   import type { FixWindowProps, FixWindowEmits, FixWindowExpose, FixWindowEvent } from "./FixWindow"
+  import Button from "fishtvue/button/Button.vue"
   import Component from "fishtvue/component"
   // ---BASE-COMPONENT----------------------
   const FixWindow = new Component<"FixWindow">()
@@ -306,7 +306,7 @@
         } else {
           countTimer.value++
         }
-      }, 100)
+      }, 100) as unknown as number
     }
   }
 
