@@ -10,6 +10,9 @@ import { BadgeOption } from "fishtvue/badge"
 import { ButtonOption } from "fishtvue/button"
 import { IconsOption } from "fishtvue/icons"
 import { LoadingOption } from "fishtvue/loading"
+import { InputOption } from "fishtvue/input"
+import { LabelOption } from "fishtvue/label"
+import { InputLayoutOption } from "fishtvue/inputlayout"
 
 export declare type FishtVue = {
   config: FishtVueConfiguration
@@ -90,6 +93,9 @@ export type OptionsTheme = Partial<{
 }>
 
 export type ComponentsOptions = Partial<{
+  Input: InputOption
+  Label: LabelOption
+  InputLayout: InputLayoutOption
   Button: ButtonOption
   Icons: IconsOption
   Loading: LoadingOption

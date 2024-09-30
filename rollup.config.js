@@ -56,6 +56,8 @@ const EXTERNAL = [
   "clsx"
 ]
 const EXTERNAL_CORE_DEPENDENCIES = {
+  "label/Label": "label",
+  "inputlayout/InputLayout": "inputlayout",
   "button/Button": "button",
   "icons/Icons": "icons",
   "loading/Loading": "loading",
@@ -88,6 +90,7 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/config": "${PROJECT_NAME}.config",
   "${PROJECT_NAME}/component": "${PROJECT_NAME}.component",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
+  "${PROJECT_NAME}/label": "${PROJECT_NAME}.label",
   "${PROJECT_NAME}/button": "${PROJECT_NAME}.button",
   "${PROJECT_NAME}/icons": "${PROJECT_NAME}.icons",
   "${PROJECT_NAME}/loading": "${PROJECT_NAME}.loading",

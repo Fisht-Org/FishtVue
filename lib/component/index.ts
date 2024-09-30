@@ -140,10 +140,12 @@ export default class Component<T extends keyof ComponentsOptions> {
   }
   public setStyle = <T extends string | string[]>(stylesComp: T | T[], isBaseClasses = false): string => {
     const styles = cn(stylesComp)
-    const newClasses = styles.split(" ").filter((item) => !listOfStyledComponents.hasValue(this.name, item))
+    const newClasses = styles
+      .split(" ")
+      .filter((item) => !listOfStyledComponents.hasValue(this.name, `${isBaseClasses ? "" : " "}${item}`))
     if (newClasses?.length) {
       newClasses.forEach((item) => {
-        listOfStyledComponents.add(this.name, [item])
+        listOfStyledComponents.add(this.name, [`${isBaseClasses ? "" : " "}${item}`])
         const css = tailwind(item, {
           selector: `.${this.prefix}${toKebabCase(this.name)}[${this.scopeId}]${isBaseClasses ? "" : " "}`,
           darkSelector: this.__globalOptionsTheme?.darkModeSelector ?? ""

@@ -340,7 +340,7 @@
     :disabled="disabled">
     <template v-if="type === 'icon'">
       <Icons v-if="icon" :type="icon" :class="classIcon" />
-      <Loading v-if="isLoading" type="simple" :size="25" :class="['absolute']" />
+      <Loading v-if="isLoading" type="simple" :size="25" class="absolute" />
       <FixWindow mode="filled" :class="roundedClasses[rounded]" :delay="5.0">
         <slot name="default" />
       </FixWindow>

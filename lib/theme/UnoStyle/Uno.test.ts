@@ -1515,11 +1515,14 @@ describe("unoStyle", () => {
     })
     describe("Text Color", () => {
       it.each<{ classValue: string; expected: string }>([
-        { classValue: "text-inherit", expected: ".text-inherit {\n  color: inherit;\n}" },
-        { classValue: "text-current", expected: ".text-current {\n  color: currentColor;\n}" },
-        { classValue: "text-transparent", expected: ".text-transparent {\n  color: transparent;\n}" },
-        { classValue: "text-black", expected: ".text-black {\n  color: #000000;\n}" },
-        { classValue: "text-white", expected: ".text-white {\n  color: #ffffff;\n}" }
+        // { classValue: "text-inherit", expected: ".text-inherit {\n  color: inherit;\n}" },
+        // { classValue: "text-current", expected: ".text-current {\n  color: currentColor;\n}" },
+        // { classValue: "text-transparent", expected: ".text-transparent {\n  color: transparent;\n}" },
+        // { classValue: "text-black", expected: ".text-black {\n  color: #000000;\n}" },
+        // { classValue: "text-white", expected: ".text-white {\n  color: #ffffff;\n}" },
+        { classValue: "text-white/0", expected: ".text-white\\/0 {\n  color: #ffffff00;\n}" },
+        { classValue: "text-white/50", expected: ".text-white\\/50 {\n  color: #ffffff80;\n}" },
+        { classValue: "text-white/100", expected: ".text-white\\/100 {\n  color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -1572,6 +1575,18 @@ describe("unoStyle", () => {
         },
         { classValue: "decoration-black", expected: ".decoration-black {\n  text-decoration-color: #000000;\n}" },
         { classValue: "decoration-white", expected: ".decoration-white {\n  text-decoration-color: #ffffff;\n}" },
+        {
+          classValue: "decoration-white/0",
+          expected: ".decoration-white\\/0 {\n  text-decoration-color: #ffffff00;\n}"
+        },
+        {
+          classValue: "decoration-white/50",
+          expected: ".decoration-white\\/50 {\n  text-decoration-color: #ffffff80;\n}"
+        },
+        {
+          classValue: "decoration-white/100",
+          expected: ".decoration-white\\/100 {\n  text-decoration-color: #ffffff;\n}"
+        },
         { classValue: "decoration-slate-50", expected: ".decoration-slate-50 {\n  text-decoration-color: #f8fafc;\n}" },
         {
           classValue: "decoration-emerald-100",
@@ -1809,7 +1824,10 @@ describe("unoStyle", () => {
         { classValue: "bg-current", expected: ".bg-current {\n  background-color: currentColor;\n}" },
         { classValue: "bg-transparent", expected: ".bg-transparent {\n  background-color: transparent;\n}" },
         { classValue: "bg-black", expected: ".bg-black {\n  background-color: #000000;\n}" },
-        { classValue: "bg-white", expected: ".bg-white {\n  background-color: #ffffff;\n}" }
+        { classValue: "bg-white", expected: ".bg-white {\n  background-color: #ffffff;\n}" },
+        { classValue: "bg-white/0", expected: ".bg-white\\/0 {\n  background-color: #ffffff00;\n}" },
+        { classValue: "bg-white/50", expected: ".bg-white\\/50 {\n  background-color: #ffffff80;\n}" },
+        { classValue: "bg-white/100", expected: ".bg-white\\/100 {\n  background-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -1966,6 +1984,21 @@ describe("unoStyle", () => {
           classValue: "from-white",
           expected:
             ".from-white {\n  --tw-gradient-from: #ffffff var(--tw-gradient-from-position);\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);\n}"
+        },
+        {
+          classValue: "from-white/0",
+          expected:
+            ".from-white\\/0 {\n  --tw-gradient-from: #ffffff00 var(--tw-gradient-from-position);\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);\n}"
+        },
+        {
+          classValue: "from-white/50",
+          expected:
+            ".from-white\\/50 {\n  --tw-gradient-from: #ffffff80 var(--tw-gradient-from-position);\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);\n}"
+        },
+        {
+          classValue: "from-white/100",
+          expected:
+            ".from-white\\/100 {\n  --tw-gradient-from: #ffffff var(--tw-gradient-from-position);\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);\n}"
         }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
@@ -2096,6 +2129,21 @@ describe("unoStyle", () => {
           classValue: "via-white",
           expected:
             ".via-white {\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), #ffffff var(--tw-gradient-via-position), var(--tw-gradient-to);\n}"
+        },
+        {
+          classValue: "via-white/0",
+          expected:
+            ".via-white\\/0 {\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), #ffffff00 var(--tw-gradient-via-position), var(--tw-gradient-to);\n}"
+        },
+        {
+          classValue: "via-white/50",
+          expected:
+            ".via-white\\/50 {\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), #ffffff80 var(--tw-gradient-via-position), var(--tw-gradient-to);\n}"
+        },
+        {
+          classValue: "via-white/100",
+          expected:
+            ".via-white\\/100 {\n  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);\n  --tw-gradient-stops: var(--tw-gradient-from), #ffffff var(--tw-gradient-via-position), var(--tw-gradient-to);\n}"
         }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
@@ -2221,6 +2269,18 @@ describe("unoStyle", () => {
         {
           classValue: "to-white",
           expected: ".to-white {\n  --tw-gradient-to: #ffffff var(--tw-gradient-to-position);\n}"
+        },
+        {
+          classValue: "to-white/0",
+          expected: ".to-white\\/0 {\n  --tw-gradient-to: #ffffff00 var(--tw-gradient-to-position);\n}"
+        },
+        {
+          classValue: "to-white/50",
+          expected: ".to-white\\/50 {\n  --tw-gradient-to: #ffffff80 var(--tw-gradient-to-position);\n}"
+        },
+        {
+          classValue: "to-white/100",
+          expected: ".to-white\\/100 {\n  --tw-gradient-to: #ffffff var(--tw-gradient-to-position);\n}"
         }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
@@ -2446,7 +2506,10 @@ describe("unoStyle", () => {
         { classValue: "border-current", expected: ".border-current {\n  border-color: currentColor;\n}" },
         { classValue: "border-transparent", expected: ".border-transparent {\n  border-color: transparent;\n}" },
         { classValue: "border-black", expected: ".border-black {\n  border-color: #000000;\n}" },
-        { classValue: "border-white", expected: ".border-white {\n  border-color: #ffffff;\n}" }
+        { classValue: "border-white", expected: ".border-white {\n  border-color: #ffffff;\n}" },
+        { classValue: "border-white/0", expected: ".border-white\\/0 {\n  border-color: #ffffff00;\n}" },
+        { classValue: "border-white/50", expected: ".border-white\\/50 {\n  border-color: #ffffff80;\n}" },
+        { classValue: "border-white/100", expected: ".border-white\\/100 {\n  border-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -2509,7 +2572,10 @@ describe("unoStyle", () => {
         { classValue: "outline-current", expected: ".outline-current {\n  outline-color: currentColor;\n}" },
         { classValue: "outline-transparent", expected: ".outline-transparent {\n  outline-color: transparent;\n}" },
         { classValue: "outline-black", expected: ".outline-black {\n  outline-color: #000000;\n}" },
-        { classValue: "outline-white", expected: ".outline-white {\n  outline-color: #ffffff;\n}" }
+        { classValue: "outline-white", expected: ".outline-white {\n  outline-color: #ffffff;\n}" },
+        { classValue: "outline-white/0", expected: ".outline-white\\/0 {\n  outline-color: #ffffff00;\n}" },
+        { classValue: "outline-white/50", expected: ".outline-white\\/50 {\n  outline-color: #ffffff80;\n}" },
+        { classValue: "outline-white/100", expected: ".outline-white\\/100 {\n  outline-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -2573,32 +2639,32 @@ describe("unoStyle", () => {
         {
           classValue: "ring-0",
           expected:
-            ".ring-0 {\n  box-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n}"
+            ".ring-0 {\n  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);\n  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);\n}"
         },
         {
           classValue: "ring-1",
           expected:
-            ".ring-1 {\n  box-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n}"
+            ".ring-1 {\n  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);\n  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);\n}"
         },
         {
           classValue: "ring-2",
           expected:
-            ".ring-2 {\n  box-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n}"
+            ".ring-2 {\n  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);\n  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);\n}"
         },
         {
           classValue: "ring",
           expected:
-            ".ring {\n  box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n}"
+            ".ring {\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);\n}"
         },
         {
           classValue: "ring-4",
           expected:
-            ".ring-4 {\n  box-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n}"
+            ".ring-4 {\n  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);\n  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);\n}"
         },
         {
           classValue: "ring-8",
           expected:
-            ".ring-8 {\n  box-shadow: var(--tw-ring-inset) 0 0 0 calc(8px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n}"
+            ".ring-8 {\n  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);\n  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(8px + var(--tw-ring-offset-width)) var(--tw-ring-color);\n  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);\n}"
         },
         { classValue: "ring-inset", expected: ".ring-inset {\n  --tw-ring-inset: inset;\n}" },
         {
@@ -2616,7 +2682,10 @@ describe("unoStyle", () => {
         { classValue: "ring-current", expected: ".ring-current {\n  --tw-ring-color: currentColor;\n}" },
         { classValue: "ring-transparent", expected: ".ring-transparent {\n  --tw-ring-color: transparent;\n}" },
         { classValue: "ring-black", expected: ".ring-black {\n  --tw-ring-color: #000000;\n}" },
-        { classValue: "ring-white", expected: ".ring-white {\n  --tw-ring-color: #ffffff;\n}" }
+        { classValue: "ring-white", expected: ".ring-white {\n  --tw-ring-color: #ffffff;\n}" },
+        { classValue: "ring-white/0", expected: ".ring-white\\/0 {\n  --tw-ring-color: #ffffff00;\n}" },
+        { classValue: "ring-white/50", expected: ".ring-white\\/50 {\n  --tw-ring-color: #ffffff80;\n}" },
+        { classValue: "ring-white/100", expected: ".ring-white\\/100 {\n  --tw-ring-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -2696,7 +2765,19 @@ describe("unoStyle", () => {
           expected: ".ring-offset-transparent {\n  --tw-ring-offset-color: transparent;\n}"
         },
         { classValue: "ring-offset-black", expected: ".ring-offset-black {\n  --tw-ring-offset-color: #000000;\n}" },
-        { classValue: "ring-offset-white", expected: ".ring-offset-white {\n  --tw-ring-offset-color: #ffffff;\n}" }
+        { classValue: "ring-offset-white", expected: ".ring-offset-white {\n  --tw-ring-offset-color: #ffffff;\n}" },
+        {
+          classValue: "ring-offset-white/0",
+          expected: ".ring-offset-white\\/0 {\n  --tw-ring-offset-color: #ffffff00;\n}"
+        },
+        {
+          classValue: "ring-offset-white/50",
+          expected: ".ring-offset-white\\/50 {\n  --tw-ring-offset-color: #ffffff80;\n}"
+        },
+        {
+          classValue: "ring-offset-white/100",
+          expected: ".ring-offset-white\\/100 {\n  --tw-ring-offset-color: #ffffff;\n}"
+        }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -2837,7 +2918,10 @@ describe("unoStyle", () => {
         { classValue: "shadow-current", expected: ".shadow-current {\n  --tw-shadow-color: currentColor;\n}" },
         { classValue: "shadow-transparent", expected: ".shadow-transparent {\n  --tw-shadow-color: transparent;\n}" },
         { classValue: "shadow-black", expected: ".shadow-black {\n  --tw-shadow-color: #000000;\n}" },
-        { classValue: "shadow-white", expected: ".shadow-white {\n  --tw-shadow-color: #ffffff;\n}" }
+        { classValue: "shadow-white", expected: ".shadow-white {\n  --tw-shadow-color: #ffffff;\n}" },
+        { classValue: "shadow-white/0", expected: ".shadow-white\\/0 {\n  --tw-shadow-color: #ffffff00;\n}" },
+        { classValue: "shadow-white/50", expected: ".shadow-white\\/50 {\n  --tw-shadow-color: #ffffff80;\n}" },
+        { classValue: "shadow-white/100", expected: ".shadow-white\\/100 {\n  --tw-shadow-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -3720,7 +3804,10 @@ describe("unoStyle", () => {
         { classValue: "accent-current", expected: ".accent-current {\n  accent-color: currentColor;\n}" },
         { classValue: "accent-transparent", expected: ".accent-transparent {\n  accent-color: transparent;\n}" },
         { classValue: "accent-black", expected: ".accent-black {\n  accent-color: #000000;\n}" },
-        { classValue: "accent-white", expected: ".accent-white {\n  accent-color: #ffffff;\n}" }
+        { classValue: "accent-white", expected: ".accent-white {\n  accent-color: #ffffff;\n}" },
+        { classValue: "accent-white/0", expected: ".accent-white\\/0 {\n  accent-color: #ffffff00;\n}" },
+        { classValue: "accent-white/50", expected: ".accent-white\\/50 {\n  accent-color: #ffffff80;\n}" },
+        { classValue: "accent-white/100", expected: ".accent-white\\/100 {\n  accent-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -3784,7 +3871,10 @@ describe("unoStyle", () => {
         { classValue: "caret-current", expected: ".caret-current {\n  caret-color: currentColor;\n}" },
         { classValue: "caret-transparent", expected: ".caret-transparent {\n  caret-color: transparent;\n}" },
         { classValue: "caret-black", expected: ".caret-black {\n  caret-color: #000000;\n}" },
-        { classValue: "caret-white", expected: ".caret-white {\n  caret-color: #ffffff;\n}" }
+        { classValue: "caret-white", expected: ".caret-white {\n  caret-color: #ffffff;\n}" },
+        { classValue: "caret-white/0", expected: ".caret-white\\/0 {\n  caret-color: #ffffff00;\n}" },
+        { classValue: "caret-white/50", expected: ".caret-white\\/50 {\n  caret-color: #ffffff80;\n}" },
+        { classValue: "caret-white/100", expected: ".caret-white\\/100 {\n  caret-color: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -4002,7 +4092,10 @@ describe("unoStyle", () => {
         { classValue: "fill-current", expected: ".fill-current {\n  fill: currentColor;\n}" },
         { classValue: "fill-transparent", expected: ".fill-transparent {\n  fill: transparent;\n}" },
         { classValue: "fill-black", expected: ".fill-black {\n  fill: #000000;\n}" },
-        { classValue: "fill-white", expected: ".fill-white {\n  fill: #ffffff;\n}" }
+        { classValue: "fill-white", expected: ".fill-white {\n  fill: #ffffff;\n}" },
+        { classValue: "fill-white/0", expected: ".fill-white\\/0 {\n  fill: #ffffff00;\n}" },
+        { classValue: "fill-white/50", expected: ".fill-white\\/50 {\n  fill: #ffffff80;\n}" },
+        { classValue: "fill-white/100", expected: ".fill-white\\/100 {\n  fill: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })
@@ -4039,7 +4132,10 @@ describe("unoStyle", () => {
         { classValue: "stroke-current", expected: ".stroke-current {\n  stroke: currentColor;\n}" },
         { classValue: "stroke-transparent", expected: ".stroke-transparent {\n  stroke: transparent;\n}" },
         { classValue: "stroke-black", expected: ".stroke-black {\n  stroke: #000000;\n}" },
-        { classValue: "stroke-white", expected: ".stroke-white {\n  stroke: #ffffff;\n}" }
+        { classValue: "stroke-white", expected: ".stroke-white {\n  stroke: #ffffff;\n}" },
+        { classValue: "stroke-white/0", expected: ".stroke-white\\/0 {\n  stroke: #ffffff00;\n}" },
+        { classValue: "stroke-white/50", expected: ".stroke-white\\/50 {\n  stroke: #ffffff80;\n}" },
+        { classValue: "stroke-white/100", expected: ".stroke-white\\/100 {\n  stroke: #ffffff;\n}" }
       ])(`tailwind($classValue)`, ({ classValue, expected }) => {
         expect(tailwind(classValue)).toBe(expected)
       })

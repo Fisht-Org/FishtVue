@@ -3,7 +3,7 @@
   import type { IconsProps, IconsExpose } from "./Icons"
   import { convertToCamelCase } from "fishtvue/utils/stringHandler"
   // ---------------------------------------
-  import * as HeroIcons from "@heroicons/vue/24/outline"
+  import * as HeroIcons from "@heroicons/vue/24/solid"
   // ---------------------------------------
   // https://icon-sets.iconify.design/
   import { Icon, type IconifyIconName, loadIcons } from "@iconify/vue"

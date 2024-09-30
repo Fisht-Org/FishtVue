@@ -83,7 +83,7 @@
     const classes = "fixed top-0 left-0 text-neutral-800 dark:text-neutral-300"
     return FixWindow.setStyle([classes, options?.classBody ?? "", props.classBody], true)
   })
-  const classBody = computed(() => FixWindow.setStyle([mode.value, options?.class ?? "", props.class]))
+  const classBody = computed(() => FixWindow.setStyle([mode.value ?? "", options?.class ?? "", props.class]))
   // ---EXPOSE------------------------------
   defineExpose<FixWindowExpose>({
     // ---STATE-------------------------

@@ -34,7 +34,7 @@ export const singleStyles: Record<string, string> = {
   "outline-none": "outline: 2px solid transparent;\n  outline-offset: 2px;",
   outline: "outline-style: solid;",
   "ring-inset": "--tw-ring-inset: inset;",
-  ring: "box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);",
+  ring: "box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);",
   shadow: "box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);",
   blur: `--tw-blur: blur(8px);\n  ${baseFilter}`,
   "drop-shadow": `--tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));\n  ${baseFilter}`,
