@@ -916,7 +916,7 @@ export default <Record<string, StyleType>>{
     reg: /(?<style>scale)-(?<axis>[xy])?-?((?<special>\d+)|(\[(?<abstract>.*?)]))/,
     getValue(classStyle) {
       const groups = classStyle.match(this.reg as RegExp)?.groups as GroupsRegExp
-      return scale[groups.axis](groups.abstract ?? +groups.special / 100)
+      return scale[groups.axis](groups.abstract ?? `${+groups.special / 100}`)
     }
   },
   rotate: {

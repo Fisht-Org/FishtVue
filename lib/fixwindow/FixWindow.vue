@@ -40,7 +40,10 @@
     () => props.paddingWindow ?? options?.paddingWindow ?? 0
   )
   const byCursor = computed<NonNullable<FixWindowProps["byCursor"]>>(() => props.byCursor ?? options?.byCursor ?? false)
-  const isCloseButton = computed<NonNullable<FixWindowProps["closeButton"]>>(
+  const isStopOpenPropagation = computed<FixWindowProps["stopOpenPropagation"]>(
+    () => props.stopOpenPropagation ?? false
+  )
+  const isCloseButton = computed<FixWindowProps["closeButton"]>(
     () => props.closeButton ?? options?.closeButton ?? false
   )
   const element = computed<HTMLElement>(() => {
@@ -80,7 +83,7 @@
   })
   FixWindow.setStyle(`transition-opacity ease-in-out duration-300 opacity-100 opacity-0`, true)
   const classBase = computed(() => {
-    const classes = "fixed top-0 left-0 text-neutral-800 dark:text-neutral-300"
+    const classes = "fixed text-neutral-800 dark:text-neutral-300"
     return FixWindow.setStyle([classes, options?.classBody ?? "", props.classBody], true)
   })
   const classBody = computed(() => FixWindow.setStyle([mode.value ?? "", options?.class ?? "", props.class]))
@@ -260,13 +263,9 @@
   }
 
   function addPositionListener() {
-    if (scrollableEl.value) {
-      ;(scrollableEl.value as HTMLElement).addEventListener("scroll", updatePosition)
-    }
+    if (scrollableEl.value) (scrollableEl.value as HTMLElement).addEventListener("scroll", updatePosition)
     window.addEventListener("scroll", updatePosition)
-    if (scrollableEl.value) {
-      ;(scrollableEl.value as HTMLElement).addEventListener("resize", updatePosition)
-    }
+    if (scrollableEl.value) (scrollableEl.value as HTMLElement).addEventListener("resize", updatePosition)
     window.addEventListener("resize", updatePosition)
   }
 
@@ -282,15 +281,14 @@
   }
 
   // ---OPEN-CLOSE--------------------------
-  function open(env?: MouseEvent) {
-    if (byCursor.value) {
-      positionMouse.value = { x: env?.x as number, y: env?.y as number }
-    }
+  function open(event?: MouseEvent) {
+    if (isStopOpenPropagation.value) event?.stopImmediatePropagation()
+    if (byCursor.value) positionMouse.value = { x: event?.x as number, y: event?.y as number }
 
     function setIsOpen() {
       isOpen.value = true
-      if (env) {
-        emit("open", env)
+      if (event) {
+        emit("open", event)
       }
     }
 
@@ -369,19 +367,6 @@
             yPositionIndex: 0 | 1 | -1
           }
         >{}
-        if (["absolute", "fixed"].includes(getComputedStyle(element.value.offsetParent as HTMLElement).position)) {
-          const parent = (element.value.offsetParent as HTMLElement)?.getBoundingClientRect()
-          body.x = body.x - parent.x
-          body.y = body.y - parent.y
-          const elParent = element.value.offsetParent as HTMLElement
-          const borderLeft = parseFloat(getComputedStyle(elParent).borderLeftWidth),
-            borderTop = parseFloat(getComputedStyle(elParent).borderTopWidth)
-          if (borderLeft > 0) {
-            body.x = body.x - borderLeft
-          } else if (borderTop > 0) {
-            body.y = body.y - borderTop
-          }
-        }
         if (
           byCursor.value &&
           typeof positionMouse.value?.x === "number" &&
@@ -475,7 +460,7 @@
       v-show="isOpen"
       ref="fixWindow"
       :class="[`${prefix}fix-window`, classBase]"
-      :style="`transform: translate(${x}, ${y});${border}`">
+      :style="`left: ${x}; top: ${y};${border}`">
       <div :class="classBody">
         <slot />
       </div>

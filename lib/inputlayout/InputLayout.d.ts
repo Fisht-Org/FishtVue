@@ -56,7 +56,7 @@ export declare type InputLayoutExpose = {
   width: ReadRef<InputLayoutProps["width"]>
   height: ReadRef<InputLayoutProps["height"]>
   animation: ReadRef<InputLayoutProps["animation"]>
-  classBase: ReadRef<InputLayoutProps["class"]>
+  class: ReadRef<InputLayoutProps["class"]>
   classBody: ReadRef<InputLayoutProps["classBody"]>
   // ---METHODS-----------------------
   copy(): void

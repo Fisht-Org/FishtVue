@@ -18,6 +18,7 @@ export declare type FixWindowProps = {
   paddingWindow?: number | 2 | 5 | 10
   byCursor?: boolean
   closeButton?: boolean
+  stopOpenPropagation?: boolean
 }
 export declare type FixWindowSlots = {
   default(): VNode[]

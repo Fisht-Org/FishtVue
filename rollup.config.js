@@ -49,16 +49,22 @@ const BABEL_PLUGIN_OPTIONS = {
 const EXTERNAL = [
   "vue",
   "@heroicons/vue/20/solid",
+  "@heroicons/vue/20/outline",
+  "@heroicons/vue/24/solid",
   "@heroicons/vue/24/outline",
   "@iconify/vue",
   "epic-spinners",
   "tailwind-merge",
-  "clsx"
+  "clsx",
+  "lodash",
+  "gsap"
 ]
 const EXTERNAL_CORE_DEPENDENCIES = {
   "label/Label": "label",
   "inputlayout/InputLayout": "inputlayout",
+  "input/Input": "input",
   "button/Button": "button",
+  "badge/Badge": "badge",
   "icons/Icons": "icons",
   "loading/Loading": "loading",
   "fixwindow/FixWindow": "fixwindow"
@@ -82,8 +88,11 @@ function replaceComponentImportPaths() {
 }
 
 const GLOBAL_DEPENDENCIES = {
+  "epic-spinners": "epicSpinners",
   "tailwind-merge": "tailwindMerge",
   clsx: "clsx",
+  lodash: "lodash",
+  gsap: "gsap",
   vue: "Vue"
 }
 const CORE_DEPENDENCIES = JSON.parse(`{
@@ -91,10 +100,14 @@ const CORE_DEPENDENCIES = JSON.parse(`{
   "${PROJECT_NAME}/component": "${PROJECT_NAME}.component",
   "${PROJECT_NAME}/types": "${PROJECT_NAME}.types",
   "${PROJECT_NAME}/label": "${PROJECT_NAME}.label",
+  "${PROJECT_NAME}/badge": "${PROJECT_NAME}.badge",
   "${PROJECT_NAME}/button": "${PROJECT_NAME}.button",
   "${PROJECT_NAME}/icons": "${PROJECT_NAME}.icons",
   "${PROJECT_NAME}/loading": "${PROJECT_NAME}.loading",
   "${PROJECT_NAME}/fixwindow": "${PROJECT_NAME}.fixwindow",
+  "${PROJECT_NAME}/input": "${PROJECT_NAME}.input",
+  "${PROJECT_NAME}/select": "${PROJECT_NAME}.select",
+  "${PROJECT_NAME}/inputlayout": "${PROJECT_NAME}.inputlayout",
   "${PROJECT_NAME}/utils/domHandler": "${PROJECT_NAME}.utils.domHandler",
   "${PROJECT_NAME}/utils/dateHandler": "${PROJECT_NAME}.utils.dateHandler",
   "${PROJECT_NAME}/utils/arrayHandler": "${PROJECT_NAME}.utils.arrayHandler",

@@ -3,6 +3,7 @@
   import type { InputProps, InputEmits, InputExpose } from "./Input"
   import { convertToNumber, convertToPhone, toNumber, toPhone, onkeydown } from "fishtvue/utils/numberHandler"
   import InputLayout from "fishtvue/inputlayout/InputLayout.vue"
+  import Icons from "fishtvue/icons/Icons.vue"
   import Component from "fishtvue/component"
   // ---BASE-COMPONENT----------------------
   const Input = new Component<"Input">()
@@ -41,7 +42,8 @@
   const isLoading = computed<NonNullable<InputProps["isInvalid"]>>(() => props.loading ?? false)
   const isInvalid = computed<NonNullable<InputProps["isInvalid"]>>(() => (!isDisabled.value ? props.isInvalid : false))
   const messageInvalid = computed<NonNullable<InputProps["messageInvalid"]>>(() => props.messageInvalid ?? "")
-  const classBase = computed(() =>
+  const classBase = computed(() => Input.setStyle([options?.classBase ?? "", props.classBase ?? ""], true))
+  const classBaseInput = computed(() =>
     Input.setStyle([
       "relative z-10 ring-0 border-0 w-full bg-transparent p-1 h-[28px] my-1 rounded-md text-gray-900 dark:text-gray-100",
       "placeholder:select-none focus:placeholder:text-gray-400 focus:placeholder:dark:text-gray-500",
@@ -158,7 +160,7 @@
 </script>
 
 <template>
-  <div :class="`${prefix}input`">
+  <div :class="[`${prefix}input`, classBase]">
     <InputLayout :value="value" :class="classLayout ?? ''" v-bind="inputLayout" @clear="clear">
       <input
         ref="inputRef"
@@ -169,7 +171,7 @@
         :placeholder="placeholder"
         :autocomplete="autocomplete"
         :value="value"
-        :class="classBase"
+        :class="classBaseInput"
         @focus="focus"
         @blur="blur"
         @input="inputEvent"
@@ -183,16 +185,16 @@
       </template>
       <template #after>
         <slot v-if="slots.after" name="after" />
-        <!--        <EyeSlashIcon-->
-        <!--          v-if="props?.type === 'password' && type === 'password'"-->
-        <!--          class="h-5 w-5 text-gray-400 dark:text-gray-600 hover:text-cyan-500 transition cursor-pointer"-->
-        <!--          aria-hidden="true"-->
-        <!--          @click="type = 'text'" />-->
-        <!--        <EyeIcon-->
-        <!--          v-if="props?.type === 'password' && type === 'text'"-->
-        <!--          class="h-5 w-5 text-gray-400 dark:text-gray-600 hover:text-cyan-500 transition cursor-pointer"-->
-        <!--          aria-hidden="true"-->
-        <!--          @click="type = 'password'" />-->
+        <Icons
+          v-if="props?.type === 'password' && type === 'password'"
+          type="EyeSlash"
+          class="text-gray-400 dark:text-gray-600 hover:text-cyan-500 hover:dark:text-cyan-700 transition cursor-pointer"
+          @click="type = 'text'" />
+        <Icons
+          v-if="props?.type === 'password' && type === 'text'"
+          type="Eye"
+          class="text-gray-400 dark:text-gray-600 hover:text-cyan-500 hover:dark:text-cyan-700 transition cursor-pointer"
+          @click="type = 'password'" />
       </template>
     </InputLayout>
   </div>

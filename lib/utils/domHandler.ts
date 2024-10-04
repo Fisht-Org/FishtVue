@@ -263,17 +263,16 @@ export function minifyCSS(css: string | any): string {
     .replace(/ !/g, "!") // Удаление пробела перед !important
     .replace(/: /g, ":") // Удаление пробела после двоеточия
     .trim() // Удаление начальных и конечных пробелов
-  // return css
-  //   .replace(/\/\*[\s\S]*?\*\//g, "") // Удаление комментариев
-  //   .replace(/\s*([{}:;,])\s*/g, "$1") // Удаление пробелов вокруг специальных символов
-  //   .replace(/;}/g, "}") // Удаление точки с запятой перед закрывающей скобкой
-  //   .replace(/\s+/g, " ") // Замена нескольких пробелов на один
-  //   .trim() // Удаление начальных и конечных пробелов
-  // return css
-  //   .replace(/\/\*[\s\S]*?\*\//g, "") // Удаление комментариев
-  //   .replace(/\s*([{}:;,])\s*/g, "$1") // Удаление пробелов вокруг специальных символов
-  //   .replace(/;\s*}/g, "}") // Удаление точки с запятой перед закрывающей скобкой
-  //   .replace(/\s*!important/g, "!important") // Удаление пробела перед !important
-  //   .replace(/\s+/g, " ") // Замена нескольких пробелов на один
-  //   .trim() // Удаление начальных и конечных пробелов
+}
+
+export function getParentElements(element: HTMLElement): HTMLElement[] {
+  const parents: HTMLElement[] = []
+  let currentElement = element
+
+  while (currentElement.parentElement) {
+    parents.push(currentElement.parentElement)
+    currentElement = currentElement.parentElement
+  }
+
+  return parents
 }

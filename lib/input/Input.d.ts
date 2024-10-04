@@ -12,6 +12,7 @@ export declare type BaseInputProps = {
   mask: IInputMask
   lengthInteger: number
   lengthDecimal: number
+  classBase: StyleClass
   classInput: StyleClass
 }
 
@@ -61,7 +62,7 @@ export declare type InputExpose = {
   focus(env: FocusEvent): void
   blur(env: FocusEvent): void
 }
-export declare type InputOption = Pick<InputProps, "classInput" | keyof InputLayoutOption>
+export declare type InputOption = Pick<InputProps, "classBase" | "classInput" | keyof InputLayoutOption>
 
 // ---------------------------------------
 declare class Input extends ClassComponent<InputProps, InputSlots, InputEmits, InputExpose> {}

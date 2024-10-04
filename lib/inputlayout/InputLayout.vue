@@ -23,8 +23,8 @@
   const baseHeight = 38 //px
   const headerHeight = ref<number>(0)
   const isCopy = ref<boolean>(false)
-  const beforeWidth = ref<number | null>(null)
-  const afterWidth = ref<number | null>(null)
+  const beforeWidth = ref<number>(0)
+  const afterWidth = ref<number>(0)
   // ---PROPS-------------------------------
   const value = computed<InputLayoutProps["value"]>(() => props.value ?? null)
   const isValue = computed<NonNullable<InputLayoutProps["isValue"]>>(() => props.isValue ?? false)
@@ -134,8 +134,8 @@
     width,
     height,
     animation,
-    classBase,
     classBody,
+    class: classBase,
     // ---METHODS-----------------------
     copy
   })
@@ -248,37 +248,35 @@
         </div>
       </transition>
       <div v-if="help?.length" :class="classIconBody">
-        <div>
-          <Icons
-            type="QuestionMarkCircle"
-            class="text-gray-400 dark:text-gray-600 hover:text-yellow-500 transition cursor-help" />
+        <Icons
+          type="QuestionMarkCircle"
+          class="text-gray-400 dark:text-gray-600 hover:text-yellow-500 transition cursor-help" />
+        <FixWindow
+          :mode="mode"
+          event-open="click"
+          position="bottom-right"
+          :margin-px="12.0"
+          :padding-window="40"
+          class-body="z-20"
+          stop-open-propagation
+          class="border-0 w-auto max-w-[15rem] origin-top-right px-0 bg-transparent dark:bg-transparent">
+          <div v-html="help" :class="classIconContent" />
+        </FixWindow>
+      </div>
+      <template v-if="!isDisabled">
+        <div v-if="isInvalid && messageInvalid" :class="classIconBody">
+          <Icons type="ExclamationCircle" class="text-red-500 dark:text-red-500 transition cursor-pointer" />
           <FixWindow
             :mode="mode"
             event-open="click"
             position="bottom-right"
             :margin-px="12.0"
             :padding-window="40"
-            class-body="z-10"
+            class-body="z-20"
+            stop-open-propagation
             class="border-0 w-auto max-w-[15rem] origin-top-right px-0 bg-transparent dark:bg-transparent">
-            <div v-html="help" :class="classIconContent" />
+            <div v-html="messageInvalid" :class="classIconContent" />
           </FixWindow>
-        </div>
-      </div>
-      <template v-if="!isDisabled">
-        <div v-if="isInvalid && messageInvalid" :class="classIconBody">
-          <div>
-            <Icons type="ExclamationCircle" class="text-red-500 dark:text-red-500 transition cursor-pointer" />
-            <FixWindow
-              :mode="mode"
-              event-open="click"
-              position="bottom-right"
-              :margin-px="12.0"
-              :padding-window="40"
-              class-body="z-10"
-              class="border-0 w-auto max-w-[15rem] origin-top-right px-0 bg-transparent dark:bg-transparent">
-              <div v-html="messageInvalid" :class="classIconContent" />
-            </FixWindow>
-          </div>
         </div>
         <transition
           leave-active-class="transition ease-in duration-200"
@@ -288,25 +286,21 @@
           enter-from-class="opacity-0"
           enter-to-class="opacity-100">
           <div v-if="clear && (value?.length || value > 0)" :class="classIconBody">
-            <div>
-              <Icons
-                type="XCircle"
-                class="text-gray-400 dark:text-gray-600 hover:text-red-600 hover:dark:text-red-500 transition-all duration-300 cursor-pointer"
-                @click.stop="emit('clear')" />
-              <FixWindow :mode="mode" :delay="10" :padding-window="40">Очистить</FixWindow>
-            </div>
+            <Icons
+              type="XCircle"
+              class="text-gray-400 dark:text-gray-600 hover:text-red-600 hover:dark:text-red-500 transition-all duration-300 cursor-pointer"
+              @click.stop="emit('clear')" />
+            <FixWindow :mode="mode" :delay="10" :padding-window="40">Очистить</FixWindow>
           </div>
         </transition>
       </template>
       <template v-else-if="value?.length">
         <div v-if="!isCopy" :class="classIconBody">
-          <div>
-            <Icons
-              type="DocumentDuplicate"
-              class="mr-2 text-gray-400 dark:text-gray-600 hover:text-gray-600 hover:dark:text-gray-400 transition"
-              @click.stop="copy" />
-            <FixWindow :mode="mode" :delay="10" :padding-window="40">Копировать</FixWindow>
-          </div>
+          <Icons
+            type="DocumentDuplicate"
+            class="mr-2 text-gray-400 dark:text-gray-600 hover:text-gray-600 hover:dark:text-gray-400 transition"
+            @click.stop="copy" />
+          <FixWindow :mode="mode" :delay="10" :padding-window="40">Копировать</FixWindow>
         </div>
         <Icons v-else type="Check" class="mr-2 text-emerald-400 dark:text-emerald-600" />
       </template>

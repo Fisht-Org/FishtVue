@@ -1,0 +1,5 @@
+{
+  "main": "./Select.mjs",
+  "module": "./Select.mjs",
+  "types": "./Select.d.ts"
+}

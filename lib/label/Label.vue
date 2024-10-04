@@ -26,13 +26,13 @@
   const classBase = computed(() =>
     Label.setStyle(
       [
-        "absolute top-[38px] flex pointer-events-none select-none h-5 rounded-md transition-all duration-200",
+        "absolute top-[38px] flex pointer-events-none select-none h-5 rounded-md transition-all duration-200 px-1",
         type.value === "dynamic" ? `peer-focus:-translate-y-[60px] peer-focus:translate-x-4 -translate-y-7` : "",
         type.value === "offsetDynamic"
-          ? `peer-focus:-translate-y-[48px] peer-focus:translate-x-4 -translate-y-7 px-1 bg-gradient-to-t ${background.value}`
+          ? `peer-focus:-translate-y-[48px] peer-focus:translate-x-4 -translate-y-7 bg-gradient-to-t ${background.value}`
           : "",
         type.value === "offsetStatic"
-          ? `-translate-y-[48px] translate-x-4 px-1 bg-gradient-to-t ${background.value} from-50% to-transparent to-55%`
+          ? `-translate-y-[48px] translate-x-4 bg-gradient-to-t ${background.value} from-50% to-transparent to-55%`
           : "",
         type.value === "static" ? "-translate-y-[60px] translate-x-4" : "",
         type.value === "vanishing" ? `-translate-y-[30px]` : "",

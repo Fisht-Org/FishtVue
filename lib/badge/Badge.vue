@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { computed, onMounted } from "vue"
   import type { BadgeProps, BadgeEmits, BadgeExpose } from "./Badge"
-  import Component from "fishtvue/component"
+  import Icons from "fishtvue/icons/Icons.vue"
   import Button from "fishtvue/button/Button.vue"
-  import { XMarkIcon } from "@heroicons/vue/20/solid"
+  import Component from "fishtvue/component"
   // ---BASE-COMPONENT----------------------
   const Badge = new Component<"Badge">()
   const options = Badge.getOptions()
@@ -85,7 +85,7 @@
     </svg>
     <slot />
     <Button v-if="isButton" mode="ghost" class="m-0 rounded-[5px] h-4 w-4 px-0" @click="deleteBadge">
-      <XMarkIcon aria-hidden="true" :class="classButtonIcon" />
+      <Icons type="XMark" :class="classButtonIcon" />
     </Button>
   </div>
 </template>
