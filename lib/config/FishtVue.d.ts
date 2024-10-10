@@ -14,6 +14,7 @@ import { LabelOption } from "fishtvue/label"
 import { InputLayoutOption } from "fishtvue/inputlayout"
 import { InputOption } from "fishtvue/input"
 import { SelectOption } from "fishtvue/select"
+import { AriaOption } from "fishtvue/aria"
 
 export declare type FishtVue = {
   config: FishtVueConfiguration
@@ -95,6 +96,7 @@ export type OptionsTheme = Partial<{
 
 export type ComponentsOptions = Partial<{
   Input: InputOption
+  Aria: AriaOption
   Select: SelectOption
   Label: LabelOption
   InputLayout: InputLayoutOption

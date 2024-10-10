@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, getCurrentInstance, ref, watch, onMounted, useSlots } from "vue"
   import type { InputProps, InputEmits, InputExpose } from "./Input"
+  import type { InputLayoutExpose } from "fishtvue/inputlayout"
   import { convertToNumber, convertToPhone, toNumber, toPhone, onkeydown } from "fishtvue/utils/numberHandler"
   import InputLayout from "fishtvue/inputlayout/InputLayout.vue"
   import Icons from "fishtvue/icons/Icons.vue"
@@ -14,17 +15,16 @@
   const emit = defineEmits<InputEmits>()
   const slots = useSlots()
   // ---REF-LINK----------------------------
+  const layout = ref<InputLayoutExpose>()
   const inputRef = ref<HTMLElement | undefined>()
   // ---STATE-------------------------------
   const classLayout = ref<InputProps["class"]>()
   const isActiveInput = ref<boolean>(false)
   const mask = computed<InputProps["mask"] | null>(() => props?.mask ?? null)
-  const value = ref<InputProps["modelValue"]>()
+  const modelValue = ref<InputProps["modelValue"]>()
   watch(
     () => props.modelValue,
-    (modelValue) => {
-      value.value = String(modelValue ? toMask(modelValue) : (modelValue ?? ""))
-    },
+    (value) => (modelValue.value = String(value ? toMask(value) : (value ?? ""))),
     { immediate: true }
   )
   const arrayInputType: Array<InputProps["type"]> = ["text", "number", "email", "password"]
@@ -36,10 +36,10 @@
   const autocomplete = computed<NonNullable<InputProps["autocomplete"]>>(() => props?.autocomplete ?? "on")
   const lengthInteger = computed<NonNullable<InputProps["lengthInteger"]>>(() => +(props?.lengthInteger ?? 20))
   const lengthDecimal = computed<NonNullable<InputProps["lengthDecimal"]>>(() => +(props?.lengthDecimal ?? 0))
-  const isValue = computed<boolean>(() => !!value.value || isActiveInput.value)
+  const isValue = computed<boolean>(() => !!modelValue.value || isActiveInput.value)
   const mode = computed<NonNullable<InputProps["mode"]>>(() => props.mode ?? "outlined")
   const isDisabled = computed<NonNullable<InputProps["disabled"]>>(() => props.disabled ?? false)
-  const isLoading = computed<NonNullable<InputProps["isInvalid"]>>(() => props.loading ?? false)
+  const isLoading = computed<NonNullable<InputProps["loading"]>>(() => props.loading ?? false)
   const isInvalid = computed<NonNullable<InputProps["isInvalid"]>>(() => (!isDisabled.value ? props.isInvalid : false))
   const messageInvalid = computed<NonNullable<InputProps["messageInvalid"]>>(() => props.messageInvalid ?? "")
   const classBase = computed(() => Input.setStyle([options?.classBase ?? "", props.classBase ?? ""], true))
@@ -73,12 +73,13 @@
   // ---EXPOSE------------------------------
   defineExpose<InputExpose>({
     //---STATE-------------------------
+    layout,
     // inputRef,
     isActiveInput,
     // ---PROPS-------------------------------
     id,
     type,
-    value,
+    modelValue,
     autoFocus,
     placeholder,
     autocomplete,
@@ -131,7 +132,7 @@
   }
 
   function inputModelValue(valueResult: any) {
-    value.value = valueResult
+    modelValue.value = valueResult
     emit("update:isInvalid", false)
     emit("update:modelValue", valueResult)
   }
@@ -161,7 +162,7 @@
 
 <template>
   <div :class="[`${prefix}input`, classBase]">
-    <InputLayout :value="value" :class="classLayout ?? ''" v-bind="inputLayout" @clear="clear">
+    <InputLayout ref="layout" :value="modelValue" :class="classLayout ?? ''" v-bind="inputLayout" @clear="clear">
       <input
         ref="inputRef"
         :id="id"
@@ -170,7 +171,7 @@
         :disabled="isDisabled"
         :placeholder="placeholder"
         :autocomplete="autocomplete"
-        :value="value"
+        :value="modelValue"
         :class="classBaseInput"
         @focus="focus"
         @blur="blur"

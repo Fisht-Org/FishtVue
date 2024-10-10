@@ -1,6 +1,6 @@
-import { VNode } from "vue"
+import { Ref, VNode } from "vue"
 import { ClassComponent, GlobalComponentConstructor, ReadRef, StyleClass } from "../types"
-import { InputLayoutOption, InputLayoutProps } from "fishtvue/inputlayout"
+import { InputLayoutExpose, InputLayoutOption, InputLayoutProps } from "fishtvue/inputlayout"
 // ---------------------------------------
 export type IInputType = "text" | "number" | "email" | "password"
 export type IInputMask = "phone" | "number" | "price"
@@ -37,21 +37,22 @@ export declare type InputEmits = {
 }
 export declare type InputExpose = {
   //---STATE-------------------------
+  layout: Ref<InputLayoutExpose | undefined>
   // inputRef: Readonly<Ref<UnwrapRef<HTMLElement>>>
   isActiveInput: ReadRef<boolean>
   // ---PROPS-------------------------------
   id: ReadRef<InputProps["id"]>
   type: ReadRef<InputProps["type"]>
-  value: ReadRef<InputProps["modelValue"]>
+  modelValue: ReadRef<InputProps["modelValue"]>
   autoFocus: ReadRef<InputProps["autoFocus"]>
   placeholder: ReadRef<InputProps["placeholder"]>
   autocomplete: ReadRef<InputProps["autocomplete"]>
   lengthInteger: ReadRef<InputProps["lengthInteger"]>
   lengthDecimal: ReadRef<InputProps["lengthDecimal"]>
-  isValue: ReadRef<boolean>
+  isValue: ReadRef<InputLayoutProps["isValue"]>
   mode: ReadRef<InputProps["mode"]>
   isDisabled: ReadRef<InputProps["disabled"]>
-  isLoading: ReadRef<InputProps["isInvalid"]>
+  isLoading: ReadRef<InputProps["loading"]>
   isInvalid: ReadRef<InputProps["isInvalid"]>
   messageInvalid: ReadRef<InputProps["messageInvalid"]>
   // ---METHODS-----------------------------

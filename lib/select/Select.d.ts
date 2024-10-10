@@ -1,8 +1,8 @@
-import { type Ref, VNode } from "vue"
+import { Ref, VNode } from "vue"
 import { ClassComponent, GlobalComponentConstructor, ReadRef, StyleClass } from "../types"
 import { BadgeProps } from "fishtvue/badge"
 import { FixWindowExpose, FixWindowProps } from "fishtvue/fixwindow"
-import { InputLayoutExpose, InputLayoutProps } from "fishtvue/inputlayout"
+import { InputLayoutExpose, InputLayoutOption, InputLayoutProps } from "fishtvue/inputlayout"
 // ---------------------------------------
 export type IDataItem = { [key: string]: any }
 export type BaseDataItem = string | number | IDataItem
@@ -94,6 +94,7 @@ export declare type SelectOption = Pick<
   | "classSelectList"
   | "classMaskQuery"
   | "paramsFixWindow"
+  | keyof InputLayoutOption
 >
 
 // ---------------------------------------
